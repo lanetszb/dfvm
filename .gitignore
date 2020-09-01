@@ -38,3 +38,12 @@
 *.nlo
 *.pdf
 *.gz
+
+cmake-build-debug
+__pycache__
+*.so
+.idea
+*.vtu
+*.pvd
+*.npy
+*.json
