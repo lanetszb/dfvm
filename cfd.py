@@ -33,6 +33,7 @@ print(current_path)
 
 from diffusion_bind import Props
 from diffusion_bind import Local
+from diffusion_bind import Convective
 from sgrid_bind import Sgrid
 
 points_dims = np.array([5, 5, 5], dtype=np.int32)
@@ -52,10 +53,11 @@ params = {'time_period': time_period, 'time_step': time_step,
 props = Props(params)
 
 local = Local(props, sgrid)
-local.calc_time_steps()
 
-print('cell_V: ', sgrid.cell_V)
-print('time_steps: ', local.time_steps)
+local.calc_time_steps()
 local.calc_alphas()
-print('alphas: ', local.alphas)
-print('time_steps: ', local.time_steps)
+
+convective = Convective(props, sgrid)
+concs = np.ones(sgrid.faces_N)
+convective.calc_betas(concs)
+

@@ -21,8 +21,8 @@
  * SOFTWARE.
  */
 
-#ifndef DFVM_LOCAL_H
-#define DFVM_LOCAL_H
+#ifndef LOCAL_H
+#define LOCAL_H
 
 #include <iostream>
 #include <map>
@@ -32,8 +32,6 @@
 
 #include "Props.h"
 #include <sgrid/Sgrid.h>
-// #include <sgrid/SgridGetSet.cpp>
-
 
 class Local {
 
@@ -44,21 +42,23 @@ public:
     virtual ~Local() {}
 
     Eigen::Ref<Eigen::VectorXd> getTimeSteps();
+
     void setTimeSteps(Eigen::Ref<Eigen::VectorXd> timeSteps);
 
     Eigen::Ref<Eigen::VectorXd> getAlphas();
+
     void setAlphas(Eigen::Ref<Eigen::VectorXd> alphas);
 
-    void calculateTimeSteps();
+    void calcTimeSteps();
 
-    void calculateAlphas();
+    void calcAlphas();
 
-     std::shared_ptr<Props> _props;
-     std::shared_ptr<Sgrid> _sgrid;
+    std::shared_ptr<Props> _props;
+    std::shared_ptr<Sgrid> _sgrid;
 
     Eigen::Map<Eigen::VectorXd> _alphas;
     Eigen::Map<Eigen::VectorXd> _timeSteps;
 
 };
 
-#endif //DFVM_LOCAL_H
+#endif // LOCAL_H

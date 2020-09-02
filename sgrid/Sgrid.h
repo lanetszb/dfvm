@@ -20,7 +20,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
+#ifndef SGRID_H
+#define SGRID_H
 
 #include<string>
 #include<vector>
@@ -177,3 +178,5 @@ public:
 void saveFilesCollectionToFile(const std::string &fileName,
                                const std::vector<std::string> &filesNames,
                                const std::vector<std::string> &filesDescriptions);
+
+#endif // SGRID_H

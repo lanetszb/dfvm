@@ -22,7 +22,6 @@
  */
 
 #include "Local.h"
-#include <iostream>
 #include <algorithm>
 #include <iterator>
 
@@ -30,10 +29,9 @@ Local::Local(std::shared_ptr<Props> props, std::shared_ptr<Sgrid> sgrid) :
         _props(props),
         _sgrid(sgrid),
         _alphas(new double, 1),
-        _timeSteps(new double, 1) {
-}
+        _timeSteps(new double, 1) {}
 
-void Local::calculateTimeSteps() {
+void Local::calcTimeSteps() {
 
     auto time = std::get<double>(_props->_params["time_period"]);
     auto timeStep = std::get<double>(_props->_params["time_step"]);
@@ -49,10 +47,9 @@ void Local::calculateTimeSteps() {
 
     delete _timeSteps.data();
     new(&_timeSteps) Eigen::Map<Eigen::VectorXd>(array, localTimeSteps.size());
-    std::cout << _timeSteps << std::endl;
 }
 
-void Local::calculateAlphas() {
+void Local::calcAlphas() {
 
     delete _alphas.data();
     auto array = new double[_timeSteps.size()];

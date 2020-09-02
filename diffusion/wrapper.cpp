@@ -28,6 +28,7 @@
 
 #include "math/Props.h"
 #include "math/Local.h"
+#include "math/Convective.h"
 // #include "Equation.h"
 
 namespace py = pybind11;
@@ -40,7 +41,7 @@ PYBIND11_MODULE(diffusion_bind, m) {
                  "params"_a)
 
             .def_readwrite("params", &Props::_params)
-            .def("calc_d", &Props::calcD, "conc"_a)
+            .def("calc_D", &Props::calcD, "conc"_a)
             .def("print_params", &Props::printParams);
 
     py::class_<Local, std::shared_ptr<Local>>(m, "Local")
@@ -48,12 +49,23 @@ PYBIND11_MODULE(diffusion_bind, m) {
                  "props"_a,
                  "sgrid"_a)
 
-            .def("calc_time_steps", &Local::calculateTimeSteps)
-            .def("calc_alphas", &Local::calculateAlphas)
+            .def("calc_time_steps", &Local::calcTimeSteps)
+            .def("calc_alphas", &Local::calcAlphas)
             .def_property("time_steps",
                           &Local::getTimeSteps, &Local::setTimeSteps)
             .def_property("alphas",
                           &Local::getAlphas, &Local::setAlphas);
+
+
+    py::class_<Convective, std::shared_ptr<Convective>>(m, "Convective")
+            .def(py::init<std::shared_ptr<Props>, std::shared_ptr<Sgrid>>(),
+                 "props"_a,
+                 "sgrid"_a)
+
+            .def("weigh_D", &Convective::weighD, "method"_a)
+            .def("calc_betas", &Convective::calcBetas)
+            .def_property("betas",
+                          &Convective::getBetas, &Convective::setBetas);
 
 }
 
