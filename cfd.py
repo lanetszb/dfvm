@@ -28,19 +28,28 @@ import numpy as np
 import json
 
 current_path = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(os.path.join(current_path))
+sys.path.append(os.path.join(current_path, '../'))
 print(current_path)
 
 from diffusion_bind import Props
 from diffusion_bind import Local
 from diffusion_bind import Convective
-from sgrid_bind import Sgrid
+from sgrid import Sgrid
 
 points_dims = np.array([5, 5, 5], dtype=np.int32)
 points_origin = np.array([0., 0., 0.], dtype=np.float)
 spacing = np.array([1., 1., 1.], dtype=np.float)
 
 sgrid = Sgrid(points_dims, points_origin, spacing)
+
+points_array = np.random.rand(sgrid.points_N)
+points_arrays = {"points_array": points_array}
+sgrid.points_arrays = points_arrays
+
+cells_array = np.random.rand(sgrid.cells_N)
+cells_arrays = {"cells_array ": cells_array}
+sgrid.cells_arrays = cells_arrays
+
 #
 time_period = float(10)  # sec
 time_step = 0.9  # sec
@@ -58,6 +67,6 @@ local.calc_time_steps()
 local.calc_alphas()
 
 convective = Convective(props, sgrid)
-concs = np.ones(sgrid.faces_N)
+concs = np.ones(sgrid.cells_N)
 convective.calc_betas(concs)
-
+# convective.weigh_D("mean_Average")

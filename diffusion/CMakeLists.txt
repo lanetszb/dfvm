@@ -14,7 +14,7 @@ find_package(Eigen3 REQUIRED)
 
 add_dependencies(sgrid sgrid)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/..)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../)
 
 set(SOURCE_CODE math/Props.cpp math/Local.cpp math/Convective.cpp)
 #        Equation.cpp)
@@ -24,7 +24,6 @@ add_library(${PROJECT_NAME} ${SOURCE_CODE})
 target_link_libraries(${PROJECT_NAME} PUBLIC
         Eigen3::Eigen
         sgrid)
-
 
 pybind11_add_module(${PROJECT_NAME}_bind wrapper.cpp)
 

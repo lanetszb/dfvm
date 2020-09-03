@@ -62,8 +62,9 @@ PYBIND11_MODULE(diffusion_bind, m) {
                  "props"_a,
                  "sgrid"_a)
 
-            .def("weigh_D", &Convective::weighD, "method"_a)
-            .def("calc_betas", &Convective::calcBetas)
+            .def("weigh_D", &Convective::weighD, "method"_a, "conc_first"_a,
+                 "conc_second"_a)
+            .def("calc_betas", &Convective::calcBetas, "concs"_a)
             .def_property("betas",
                           &Convective::getBetas, &Convective::setBetas);
 

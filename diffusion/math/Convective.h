@@ -48,7 +48,8 @@ public:
 
     void calcBetas(Eigen::Ref<Eigen::VectorXd> concs);
 
-    double weighD(const std::string &method);
+    double weighD(const std::string &method, const double &concFirst,
+                  const double &concSecond);
 
     std::shared_ptr<Props> _props;
     std::shared_ptr<Sgrid> _sgrid;

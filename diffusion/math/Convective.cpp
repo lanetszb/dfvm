@@ -31,20 +31,35 @@ Convective::Convective(std::shared_ptr<Props> props,
         _sgrid(sgrid),
         _betas(new double[_sgrid->_facesN], _sgrid->_facesN) {}
 
-double Convective::weighD(const std::string &method) {
+double Convective::weighD(const std::string &method, const double &concFirst,
+                          const double &concSecond) {
 
-    if (method == "meanAverage")
-        return 1.0;
-    else if (method == "meanHarmonic")
-        return 2.0;
-    else if (method == "upWind")
-        return 3.0;
-    else exit(0);
+    if (method == "meanAverage") {
+        auto conc = (concFirst + concSecond) / 2;
+        return _props->calcD(conc);
+
+    } else if (method == "meanHarmonic") {
+        auto conc = 2. * concFirst * concSecond / (concFirst + concSecond);
+        return _props->calcD(conc);
+
+    } else if (method == "upWind") {
+        auto conc = std::max(concFirst, concSecond);
+        return _props->calcD(conc);
+
+    } else exit(0);
 }
 
 void Convective::calcBetas(Eigen::Ref<Eigen::VectorXd> concs) {
 
-    _betas = concs;
+    auto &neighborsCells = _sgrid->_neighborsCells;
+
+    for (int i = 0; i < _betas.size(); i++) {
+        auto &axis = _sgrid->_facesAxis[i];
+        auto &conc0 = concs(neighborsCells.at(i)[0]);
+        auto &conc1 = concs(neighborsCells.at(i)[1]);
+        auto diffusivity = weighD("meanAverage", conc0, conc1);
+        _betas[i] = diffusivity * _sgrid->_faceS[axis] / _sgrid->_spacing[axis];
+    }
 }
 
 Eigen::Ref<Eigen::VectorXd> Convective::getBetas() {
