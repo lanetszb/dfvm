@@ -29,7 +29,7 @@
 #include "math/Props.h"
 #include "math/Local.h"
 #include "math/Convective.h"
-// #include "Equation.h"
+#include "Equation.h"
 
 namespace py = pybind11;
 using namespace pybind11::literals;
@@ -67,6 +67,26 @@ PYBIND11_MODULE(diffusion_bind, m) {
             .def("calc_betas", &Convective::calcBetas, "concs"_a)
             .def_property("betas",
                           &Convective::getBetas, &Convective::setBetas);
+
+
+    py::class_<Equation, std::shared_ptr<Equation>>(m, "Equation")
+            .def(py::init<std::shared_ptr<Props>, std::shared_ptr<Sgrid>,
+                         std::shared_ptr<Local>, std::shared_ptr<Convective>>(),
+                 "props"_a, "sgrid"_a,
+                 "local"_a, "convective"_a)
+
+            .def("fill_matrix", &Equation::fillMatrix)
+            .def("calc_concs_implicit", &Equation::calcConcsImplicit)
+            .def("calc_concs_explicit", &Equation::calcConcsExplicit)
+            .def_readwrite("dim", &Equation::dim)
+            .def_readwrite("i_curr", &Equation::iCurr)
+            .def_readwrite("i_prev", &Equation::iPrev)
+            .def_property("concs_ini",
+                          &Equation::getConcsIni, &Equation::setConcsIni)
+            .def_property("concs",
+                          &Equation::getConcs, &Equation::setConcs)
+            .def_property("concs_time",
+                          &Equation::getConcsTime, &Equation::setConcsTime);
 
 }
 

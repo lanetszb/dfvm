@@ -34,6 +34,7 @@ print(current_path)
 from diffusion_bind import Props
 from diffusion_bind import Local
 from diffusion_bind import Convective
+from diffusion_bind import Equation
 from sgrid import Sgrid
 
 points_dims = np.array([5, 5, 5], dtype=np.int32)
@@ -60,13 +61,16 @@ params = {'time_period': time_period, 'time_step': time_step,
           'd_coeff_a': d_coeff_a, 'd_coeff_b': d_coeff_b}
 #
 props = Props(params)
-
 local = Local(props, sgrid)
-
-local.calc_time_steps()
-local.calc_alphas()
-
 convective = Convective(props, sgrid)
-concs = np.ones(sgrid.cells_N)
-convective.calc_betas(concs)
+
+equation = Equation(props, sgrid, local, convective)
+
+
+# local.calc_time_steps()
+# local.calc_alphas()
+#
+# convective = Convective(props, sgrid)
+# concs = np.ones(sgrid.cells_N)
+# convective.calc_betas(concs)
 # convective.weigh_D("mean_Average")
