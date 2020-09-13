@@ -52,7 +52,7 @@ double Convective::weighD(const std::string &method, const double &concFirst,
 void Convective::calcBetas(Eigen::Ref<Eigen::VectorXd> concs) {
 
     auto &neighborsCells = _sgrid->_neighborsCells;
-
+    // ToDO: iterate only over boundary cells
     for (int i = 0; i < _betas.size(); i++) {
         auto &axis = _sgrid->_facesAxis[i];
         auto &conc0 = concs(neighborsCells.at(i)[0]);

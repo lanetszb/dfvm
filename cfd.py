@@ -24,6 +24,7 @@
 import sys
 import os
 import numpy as np
+import math
 
 import json
 
@@ -36,36 +37,78 @@ from diffusion_bind import Local
 from diffusion_bind import Convective
 from diffusion_bind import Equation
 from sgrid import Sgrid
+from sgrid import save_files_collection_to_file
 
-points_dims = np.array([5, 5, 5], dtype=np.int32)
+points_dims = np.array([88, 88, 88], dtype=np.int32)
 points_origin = np.array([0., 0., 0.], dtype=np.float)
 spacing = np.array([1., 1., 1.], dtype=np.float)
 
 sgrid = Sgrid(points_dims, points_origin, spacing)
-
 points_array = np.random.rand(sgrid.points_N)
+
 points_arrays = {"points_array": points_array}
-sgrid.points_arrays = points_arrays
+# cells_array = np.random.rand(sgrid.cells_N)
+# cells_arrays = {"cells_array ": cells_array}
+# sgrid.cells_arrays = cells_arrays
 
-cells_array = np.random.rand(sgrid.cells_N)
-cells_arrays = {"cells_array ": cells_array}
-sgrid.cells_arrays = cells_arrays
-
-#
-time_period = float(10)  # sec
-time_step = 0.9  # sec
+concs_array1 = np.tile(float(10.0), sgrid.cells_N)
+concs_array2 = np.tile(float(10.0), sgrid.cells_N)
+concs_arrays = {"concs_array1": concs_array1,
+                "concs_array2": concs_array2}
+sgrid.cells_arrays = concs_arrays
+time_period = float(100)  # sec
+time_step = 10.0  # sec
 d_coeff_a = 0.0  # m2/sec
-d_coeff_b = 1.E-10  # m2/sec
+d_coeff_b = 3.E-1  # m2/sec
 #
 params = {'time_period': time_period, 'time_step': time_step,
           'd_coeff_a': d_coeff_a, 'd_coeff_b': d_coeff_b}
 #
 props = Props(params)
 local = Local(props, sgrid)
+
 convective = Convective(props, sgrid)
 
 equation = Equation(props, sgrid, local, convective)
+print("test")
+os.system('rm -r inOut/*.vtu')
+os.system('rm -r inOut/*.pvd')
+concs_dict = dict()
+file_name = 'inOut/collection.pvd'
+files_names = list()
+files_descriptions = list()
+for i in range(len(local.alphas)):
+    sgrid.cells_arrays = {'conc': equation.concs_time[i]}
+    files_names.append(str(i) + '.vtu')
+    files_descriptions.append(str(i))
+    sgrid.save('inOut/' + files_names[i])
 
+save_files_collection_to_file(file_name, files_names, files_descriptions)
+
+# conc analyt
+# L = 10
+# conc_analyt = []
+# grid_block_n_analyt = 20
+# dX = L / grid_block_n_analyt
+# # #
+# grid_centers_analyt = []
+# for i in range(grid_block_n_analyt):
+#     grid_centers_analyt.append(0 + i * dX + dX / 2)
+#
+# conc_ini = 10.0
+# conc_out = 20.0
+# #
+# D = d_coeff_b
+# t = time_period
+# dt = time_step
+# # #
+# for i in range(grid_block_n_analyt):
+#     conc_it = conc_out + (conc_ini - conc_out) * math.erf(
+#         i * dX / 2 / math.sqrt(D * t))
+#     conc_analyt.append(conc_it)
+# # #
+# conc_analyt.reverse()
+#
 
 # local.calc_time_steps()
 # local.calc_alphas()

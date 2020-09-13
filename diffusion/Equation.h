@@ -35,7 +35,7 @@
 #include "math/Local.h"
 #include "math/Convective.h"
 #include <sgrid/Sgrid.h>
-
+// ToDo: remove
 typedef Eigen::Triplet<double> Triplet;
 typedef Eigen::SparseMatrix<double, Eigen::RowMajor> Matrix;
 typedef Matrix::InnerIterator MatrixIterator;
@@ -65,11 +65,21 @@ public:
 
     void setConcsIni(Eigen::Ref<Eigen::VectorXd> concsIni);
 
-    void fillMatrix();
+    void fillMatrix(const double &alpha);
+
+    void calculateFreeVector(const double &alpha);
+
+    void calcConcsIni();
 
     void calcConcsImplicit();
 
     void calcConcsExplicit();
+
+    // temporary arguments
+
+    void calcCellsGroup();
+
+    void cfdProcedure();
 
 
     std::shared_ptr<Props> _props;
@@ -86,7 +96,11 @@ public:
     Eigen::Map<Eigen::VectorXd> _concsIni;
 
     Matrix matrix;
+    Eigen::Map<Eigen::VectorXd> freeVector;
 
+    // temporary arguments
+    std::vector<double> boundCells;
+    std::vector<int> nonBoundCells;
 };
 
 #endif // EQUATION_H
