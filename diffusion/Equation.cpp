@@ -42,14 +42,13 @@ Equation::Equation(std::shared_ptr<Props> props,
         matrix(dim, dim),
         freeVector(new double[dim], dim) {
 
-    calcCellsGroup();
-
     std::vector<Triplet> triplets;
     triplets.reserve(3 * dim - 4);
 
     for (int i = 0; i < dim; i++)
-        triplets.emplace_back(i, i, 1);
+        triplets.emplace_back(i, i);
 
+    auto nonBoundCells = _sgrid->_typesCells.at("nonbound");
     for (int i = 0; i < nonBoundCells.size(); i++)
         for (int j = 0;
              j < _sgrid->_neighborsFaces.at(nonBoundCells[i]).size(); j++)
@@ -62,40 +61,10 @@ Equation::Equation(std::shared_ptr<Props> props,
                 auto neigborCell = _sgrid->_neighborsCells.at(neigborFace)[k];
 
                 if (neigborCell != nonBoundCells[i])
-                    triplets.emplace_back(nonBoundCells[i], neigborCell, 1);
+                    triplets.emplace_back(nonBoundCells[i], neigborCell);
             }
 
     matrix.setFromTriplets(triplets.begin(), triplets.end());
-
-    cfdProcedure();
-
-}
-
-void Equation::calcCellsGroup() {
-
-    for (int i = 0; i < dim; i++)
-        for (int j = 0; j < _sgrid->_neighborsFaces.at(i).size(); j++)
-            for (int k = 0; k < _sgrid->_neighborsCells.at(
-                    _sgrid->_neighborsFaces.at(i)[j]).size(); k++) {
-
-                auto neigborFace = _sgrid->_neighborsFaces.at(i)[j];
-                auto neigborCell = _sgrid->_neighborsCells.at(neigborFace)[k];
-                auto neigborCellLen = _sgrid->_neighborsCells.at(
-                        _sgrid->_neighborsFaces.at(i)[j]).size();
-
-                if (neigborCell == i and neigborCellLen == 1)
-                    boundCells.push_back(i);
-            }
-
-    boundCells.erase(unique(boundCells.begin(), boundCells.end()),
-                     boundCells.end());
-
-    std::vector<int> cellIdx(dim);
-    std::iota(cellIdx.begin(), cellIdx.end(), 0);
-
-    std::set_difference(cellIdx.begin(), cellIdx.end(),
-                        boundCells.begin(), boundCells.end(),
-                        std::inserter(nonBoundCells, nonBoundCells.begin()));
 }
 
 void Equation::fillMatrix(const double &alpha) {
@@ -103,39 +72,61 @@ void Equation::fillMatrix(const double &alpha) {
     for (int i = 0; i < _sgrid->_cellsN; i++)
         matrix.coeffRef(i, i) = alpha;
 
+    auto nonBoundCells = _sgrid->_typesCells.at("nonbound");
     for (int i = 0; i < nonBoundCells.size(); i++) {
-        MatrixIterator iterator(matrix, nonBoundCells[i]);
-        // ToDo: naming issue
-        auto neighborFace = _sgrid->_neighborsFaces.at(nonBoundCells[i]);
-        for (int j = 0; j < neighborFace.size(); j++) {
-            if (iterator.col() != iterator.row()) {
-                auto beta = _convective->_betas[neighborFace[j]];
-                auto normal =
-                        _sgrid->_normalsNeighborsFaces.at(nonBoundCells[i])[j];
-                iterator.valueRef() = -1 * beta;
-                matrix.coeffRef(nonBoundCells[i], nonBoundCells[i]) +=
-                        beta;
-                ++iterator;
+
+        MatrixIterator matrixIt(matrix, nonBoundCells[i]);
+        auto neighborFaces = _sgrid->_neighborsFaces.at(nonBoundCells[i]);
+        auto facesIt = 0;
+
+        while (facesIt < neighborFaces.size()) {
+            if (matrixIt.col() != matrixIt.row()) {
+                auto beta = _convective->_betas[neighborFaces[facesIt]];
+                matrixIt.valueRef() = -1 * beta;
+                matrix.coeffRef(nonBoundCells[i], nonBoundCells[i]) += beta;
+                ++matrixIt;
+                ++facesIt;
             } else {
-                ++iterator;
-                j--;
+                ++matrixIt;
             }
         }
-
     }
 }
 
-void Equation::calculateFreeVector(const double &alpha) {
-
-    auto concBound = 20.0;
+void Equation::setDirichletToBound(const double &concBound, const double &alpha,
+                                   Eigen::Map<Eigen::VectorXi> boundCells) {
 
     for (int i = 0; i < boundCells.size(); i++)
         freeVector[boundCells[i]] = alpha * concBound;
+}
+
+
+void Equation::calculateFreeVector(const double &alpha) {
+
+    auto concBack = 40.0;
+    auto concBottom = 10.0;
+    auto concFront = 20.0;
+    auto concLeft = 30.0;
+    auto concRight = 15.0;
+    auto concTop = 27.0;
+
+    auto cellsBack = _sgrid->_typesCells.at("back");
+    auto cellsBottom = _sgrid->_typesCells.at("bottom");
+    auto cellsFront = _sgrid->_typesCells.at("front");
+    auto cellsLeft = _sgrid->_typesCells.at("left");
+    auto cellsRight = _sgrid->_typesCells.at("right");
+    auto cellsTop = _sgrid->_typesCells.at("top");
+
+    setDirichletToBound(concBack, alpha, cellsBack);
+    setDirichletToBound(concBottom, alpha, cellsBottom);
+    setDirichletToBound(concFront, alpha, cellsFront);
+    setDirichletToBound(concLeft, alpha, cellsLeft);
+    setDirichletToBound(concRight, alpha, cellsRight);
+    setDirichletToBound(concTop, alpha, cellsTop);
+
+    auto nonBoundCells = _sgrid->_typesCells.at("nonbound");
     for (int i = 0; i < nonBoundCells.size(); i++)
         freeVector[nonBoundCells[i]] = alpha * _concs[iPrev][nonBoundCells[i]];
-//     for (int i = 0; i < freeVector.size(); i++)
-//         std::cout << freeVector[i] << ' ';
-//     std::cout << std::endl;
 }
 
 void Equation::calcConcsImplicit() {
@@ -156,12 +147,12 @@ void Equation::calcConcsExplicit() {
 
 void Equation::cfdProcedure() {
 
+    // ToDO: ask Alesk how to better do it
     _concs.emplace_back(_sgrid->_cellsArrays.at("concs_array1"));
     _concs.emplace_back(_sgrid->_cellsArrays.at("concs_array2"));
 
     _local->calcTimeSteps();
     _local->calcAlphas();
-
 
     for (int i = 0; i < _local->_alphas.size(); i++) {
         std::swap(iCurr, iPrev);
@@ -172,17 +163,6 @@ void Equation::cfdProcedure() {
         Eigen::Map<Eigen::VectorXd> concCurr(new double[dim], dim);
         concCurr = _concs[iCurr];
         _concsTime.push_back(concCurr);
-
-
-        // std::cout << matrix << std::endl;
-        // std::cout << std::endl;
-        // // std::cout << "_concs[iPrev]" << std::endl;
-        // for (int i = 0; i < _concs[iPrev].size(); i++)
-        //     std::cout << _concs[iPrev][i] << ' ';
-        // std::cout << std::endl;
-        // for (int i = 0; i < _concs[iCurr].size(); i++)
-        //     std::cout << _concs[iCurr][i] << ' ';
-        // std::cout << std::endl;
     }
 }
 
@@ -199,8 +179,7 @@ std::vector<Eigen::Ref<Eigen::VectorXd>> Equation::getConcsTime() {
 }
 
 void
-Equation::setConcsTime(
-        std::vector<Eigen::Ref<Eigen::VectorXd>> &concsTime) {
+Equation::setConcsTime(std::vector<Eigen::Ref<Eigen::VectorXd>> &concsTime) {
     Eigen::vectorSetter<Eigen::VectorXd>(concsTime, _concsTime);
 }
 

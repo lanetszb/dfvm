@@ -78,6 +78,7 @@ PYBIND11_MODULE(diffusion_bind, m) {
             .def("fill_matrix", &Equation::fillMatrix)
             .def("calc_concs_implicit", &Equation::calcConcsImplicit)
             .def("calc_concs_explicit", &Equation::calcConcsExplicit)
+            .def("cfd_procedure", &Equation::cfdProcedure)
             .def_readwrite("dim", &Equation::dim)
             .def_readwrite("i_curr", &Equation::iCurr)
             .def_readwrite("i_prev", &Equation::iPrev)

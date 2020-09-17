@@ -35,11 +35,11 @@
 #include "math/Local.h"
 #include "math/Convective.h"
 #include <sgrid/Sgrid.h>
+
 // ToDo: remove
 typedef Eigen::Triplet<double> Triplet;
 typedef Eigen::SparseMatrix<double, Eigen::RowMajor> Matrix;
 typedef Matrix::InnerIterator MatrixIterator;
-typedef Eigen::VectorXd Vector;
 typedef Eigen::BiCGSTAB<Eigen::SparseMatrix<double>> BiCGSTAB;
 
 class Equation {
@@ -71,12 +71,14 @@ public:
 
     void calcConcsIni();
 
+    void setDirichletToBound(const double &concBound, const double &alpha,
+                               Eigen::Map<Eigen::VectorXi> boundCells);
+
     void calcConcsImplicit();
 
     void calcConcsExplicit();
 
-    // temporary arguments
-
+    // temporary function, will be later provided by sgrid
     void calcCellsGroup();
 
     void cfdProcedure();
@@ -100,7 +102,7 @@ public:
 
     // temporary arguments
     std::vector<double> boundCells;
-    std::vector<int> nonBoundCells;
+    // std::vector<int> nonBoundCells;
 };
 
 #endif // EQUATION_H

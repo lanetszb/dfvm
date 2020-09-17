@@ -39,7 +39,7 @@ from diffusion_bind import Equation
 from sgrid import Sgrid
 from sgrid import save_files_collection_to_file
 
-points_dims = np.array([88, 88, 88], dtype=np.int32)
+points_dims = np.array([50, 50, 50], dtype=np.int32)
 points_origin = np.array([0., 0., 0.], dtype=np.float)
 spacing = np.array([1., 1., 1.], dtype=np.float)
 
@@ -66,11 +66,11 @@ params = {'time_period': time_period, 'time_step': time_step,
 #
 props = Props(params)
 local = Local(props, sgrid)
-
 convective = Convective(props, sgrid)
-
 equation = Equation(props, sgrid, local, convective)
-print("test")
+
+equation.cfd_procedure()
+
 os.system('rm -r inOut/*.vtu')
 os.system('rm -r inOut/*.pvd')
 concs_dict = dict()
@@ -84,6 +84,7 @@ for i in range(len(local.alphas)):
     sgrid.save('inOut/' + files_names[i])
 
 save_files_collection_to_file(file_name, files_names, files_descriptions)
+
 
 # conc analyt
 # L = 10
