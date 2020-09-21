@@ -39,7 +39,7 @@ from diffusion_bind import Equation
 from sgrid import Sgrid
 from sgrid import save_files_collection_to_file
 
-points_dims = np.array([50, 50, 50], dtype=np.int32)
+points_dims = np.array([10, 10, 10], dtype=np.int32)
 points_origin = np.array([0., 0., 0.], dtype=np.float)
 spacing = np.array([1., 1., 1.], dtype=np.float)
 
@@ -55,9 +55,10 @@ concs_array1 = np.tile(float(10.0), sgrid.cells_N)
 concs_array2 = np.tile(float(10.0), sgrid.cells_N)
 concs_arrays = {"concs_array1": concs_array1,
                 "concs_array2": concs_array2}
+
 sgrid.cells_arrays = concs_arrays
-time_period = float(100)  # sec
-time_step = 10.0  # sec
+time_period = float(100.)  # sec
+time_step = 5.0  # sec
 d_coeff_a = 0.0  # m2/sec
 d_coeff_b = 3.E-1  # m2/sec
 #
@@ -84,7 +85,6 @@ for i in range(len(local.alphas)):
     sgrid.save('inOut/' + files_names[i])
 
 save_files_collection_to_file(file_name, files_names, files_descriptions)
-
 
 # conc analyt
 # L = 10

@@ -40,89 +40,173 @@ Equation::Equation(std::shared_ptr<Props> props,
         iCurr(0), iPrev(1),
         _concsIni(new double[dim], dim),
         matrix(dim, dim),
-        freeVector(new double[dim], dim) {
+        freeVector(new double[dim], dim) {}
 
-    std::vector<Triplet> triplets;
-    triplets.reserve(3 * dim - 4);
+void Equation::procesNoFlowFaces(Eigen::Map<Eigen::VectorXi> noFlowFaces) {
+    for (int i = 0; i < noFlowFaces.size(); i++) {
+        auto neighborsCells = _sgrid->_neighborsCells.at(noFlowFaces[i]);
+        for (int j = 0; j < neighborsCells.size(); j++)
+            _coeffsFreeVec[noFlowFaces[i]][neighborsCells[j]] = 0;
+    }
 
-    for (int i = 0; i < dim; i++)
-        triplets.emplace_back(i, i);
+    for (int i = 0; i < noFlowFaces.size(); i++) {
+        auto neighborsCells = _sgrid->_neighborsCells.at(noFlowFaces[i]);
+        for (int j = 0; j < neighborsCells.size(); j++)
+            _coeffsMatrix[noFlowFaces[i]][neighborsCells[j]] = 0;
+    }
+}
 
-    auto nonBoundCells = _sgrid->_typesCells.at("nonbound");
-    for (int i = 0; i < nonBoundCells.size(); i++)
-        for (int j = 0;
-             j < _sgrid->_neighborsFaces.at(nonBoundCells[i]).size(); j++)
-            for (int k = 0; k < _sgrid->_neighborsCells.at(
-                    _sgrid->_neighborsFaces.at(
-                            nonBoundCells[i])[j]).size(); k++) {
+void Equation::procesNewmanFaces(const double &flowNewman,
+                                 Eigen::Map<Eigen::VectorXi> newmanFaces) {
+    for (int i = 0; i < newmanFaces.size(); i++) {
+        auto neighborsCells = _sgrid->_neighborsCells.at(newmanFaces[i]);
+        for (int j = 0; j < neighborsCells.size(); j++)
+            _coeffsFreeVec[newmanFaces[i]][neighborsCells[j]] = flowNewman;
+    }
 
-                auto neigborFace = _sgrid->_neighborsFaces.at(
-                        nonBoundCells[i])[j];
-                auto neigborCell = _sgrid->_neighborsCells.at(neigborFace)[k];
+    for (int i = 0; i < newmanFaces.size(); i++) {
+        auto neighborsCells = _sgrid->_neighborsCells.at(newmanFaces[i]);
+        for (int j = 0; j < neighborsCells.size(); j++)
+            _coeffsMatrix[newmanFaces[i]][neighborsCells[j]] = 0;
+    }
+}
 
-                if (neigborCell != nonBoundCells[i])
-                    triplets.emplace_back(nonBoundCells[i], neigborCell);
-            }
+void Equation::procesNonBoundFaces(Eigen::Map<Eigen::VectorXi> nonBoundFaces) {
 
-    matrix.setFromTriplets(triplets.begin(), triplets.end());
+    for (int i = 0; i < nonBoundFaces.size(); i++) {
+        auto neighborsCells = _sgrid->_neighborsCells.at(nonBoundFaces[i]);
+        for (int j = 0; j < neighborsCells.size(); j++) {
+            auto normal = _sgrid->_normalsNeighborsCells.at(
+                    nonBoundFaces[i])[j];
+            _coeffsMatrix[nonBoundFaces[i]][neighborsCells[j]] =
+                    normal * _convective->_betas[nonBoundFaces[i]];
+        }
+    }
+
+    for (int i = 0; i < nonBoundFaces.size(); i++) {
+        auto neighborsCells = _sgrid->_neighborsCells.at(nonBoundFaces[i]);
+        for (int j = 0; j < neighborsCells.size(); j++)
+            _coeffsFreeVec[nonBoundFaces[i]][neighborsCells[j]] = 0;
+    }
 }
 
 void Equation::fillMatrix(const double &alpha) {
 
-    for (int i = 0; i < _sgrid->_cellsN; i++)
-        matrix.coeffRef(i, i) = alpha;
+    matrix.setZero();
+
+    std::vector<std::string> dirichCellsBounds = {"left", "right",
+                                                  "top", "bottom",
+                                                  "front", "back"};
+    std::vector<int> dirichCells;
+    for (auto &bound : dirichCellsBounds) {
+        auto cells = _sgrid->_typesCells.at(bound);
+        auto position = dirichCells.end();
+        dirichCells.insert(position, cells.data(),
+                           cells.data() + cells.size());
+    }
+
+    // std::vector<std::string> dirichCellsBounds = {"left", "right"};
+
+    // std::vector<int> dirichCells;
+    // for (auto &bound : dirichCellsBounds) {
+    //     auto cells = _sgrid->_typesCells.at(bound);
+    //     auto position = dirichCells.end();
+    //     dirichCells.insert(position, cells.data(),
+    //                        cells.data() + cells.size());
+    // }
+
+    for (auto &cell: dirichCells)
+        matrix.coeffRef(cell, cell) = alpha;
 
     auto nonBoundCells = _sgrid->_typesCells.at("nonbound");
+
+    for (int i = 0; i < nonBoundCells.size(); i++)
+        matrix.coeffRef(nonBoundCells[i], nonBoundCells[i]) = alpha;
+
     for (int i = 0; i < nonBoundCells.size(); i++) {
-
-        MatrixIterator matrixIt(matrix, nonBoundCells[i]);
-        auto neighborFaces = _sgrid->_neighborsFaces.at(nonBoundCells[i]);
-        auto facesIt = 0;
-
-        while (facesIt < neighborFaces.size()) {
-            if (matrixIt.col() != matrixIt.row()) {
-                auto beta = _convective->_betas[neighborFaces[facesIt]];
-                matrixIt.valueRef() = -1 * beta;
-                matrix.coeffRef(nonBoundCells[i], nonBoundCells[i]) += beta;
-                ++matrixIt;
-                ++facesIt;
-            } else {
-                ++matrixIt;
-            }
-        }
+        auto faces = _sgrid->_neighborsFaces.at(nonBoundCells[i]);
+        auto normalsFaces = _sgrid->_normalsNeighborsFaces.at(nonBoundCells[i]);
+        for (int j = 0; j < faces.size(); j++)
+            for (const auto&[cell, cellCoeff] : _coeffsMatrix[faces[j]])
+                matrix.coeffRef(nonBoundCells[i], cell) +=
+                        normalsFaces[j] * cellCoeff;
     }
+
+    // std::vector<std::string> noFlowCellsBounds = {"top", "bottom",
+    //                                               "front", "back"};
+
+    // std::vector<int> noFlowCells;
+    // for (auto &bound : noFlowCellsBounds) {
+    //     auto cells = _sgrid->_typesCells.at(bound);
+    //     auto position = noFlowCells.end();
+    //     noFlowCells.insert(position, cells.data(),
+    //                        cells.data() + cells.size());
+    // }
+    // sort(dirichCells.begin(), dirichCells.end());
+    // sort(noFlowCells.begin(), noFlowCells.end());
+    // noFlowCells.erase(unique(noFlowCells.begin(), noFlowCells.end()),
+    //                   noFlowCells.end());
+
+    // std::vector<int> diff;
+
+    // std::set_difference(std::begin(noFlowCells), std::end(noFlowCells),
+    //                     std::begin(dirichCells), std::end(dirichCells),
+    //                     std::back_inserter(diff));
+
+    // for (const auto &i: dirichCells)
+    //     std::cout << i << ' ';
+    // std::cout << std::endl;
+
+    // for (const auto &i: noFlowCells)
+    //     std::cout << i << ' ';
+    // std::cout << std::endl;
+
+    // for (const auto &i: diff)
+    //     std::cout << i << ' ';
+    // std::cout << std::endl;
+
+    // for (int i = 0; i < diff.size(); i++)
+    //     matrix.coeffRef(diff[i], diff[i]) = alpha;
+
+    // for (int i = 0; i < diff.size(); i++) {
+    //     auto faces = _sgrid->_neighborsFaces.at(diff[i]);
+    //     auto normalsFaces = _sgrid->_normalsNeighborsFaces.at(diff[i]);
+    //     for (int j = 0; j < faces.size(); j++)
+    //         for (const auto&[cell, cellCoeff] : _coeffsMatrix[faces[j]])
+    //             matrix.coeffRef(diff[i], cell) +=
+    //                     normalsFaces[j] * cellCoeff;
+    // }
 }
 
-void Equation::setDirichletToBound(const double &concBound, const double &alpha,
-                                   Eigen::Map<Eigen::VectorXi> boundCells) {
+void Equation::procesDirichCells(const double &concBound, const double &alpha,
+                                 Eigen::Map<Eigen::VectorXi> boundCells) {
 
     for (int i = 0; i < boundCells.size(); i++)
-        freeVector[boundCells[i]] = alpha * concBound;
+        freeVector[boundCells[i]] = concBound * alpha;
 }
-
 
 void Equation::calculateFreeVector(const double &alpha) {
 
     auto concBack = 40.0;
     auto concBottom = 10.0;
     auto concFront = 20.0;
+    auto concTop = 27.0;
     auto concLeft = 30.0;
     auto concRight = 15.0;
-    auto concTop = 27.0;
 
     auto cellsBack = _sgrid->_typesCells.at("back");
     auto cellsBottom = _sgrid->_typesCells.at("bottom");
     auto cellsFront = _sgrid->_typesCells.at("front");
+    auto cellsTop = _sgrid->_typesCells.at("top");
     auto cellsLeft = _sgrid->_typesCells.at("left");
     auto cellsRight = _sgrid->_typesCells.at("right");
-    auto cellsTop = _sgrid->_typesCells.at("top");
 
-    setDirichletToBound(concBack, alpha, cellsBack);
-    setDirichletToBound(concBottom, alpha, cellsBottom);
-    setDirichletToBound(concFront, alpha, cellsFront);
-    setDirichletToBound(concLeft, alpha, cellsLeft);
-    setDirichletToBound(concRight, alpha, cellsRight);
-    setDirichletToBound(concTop, alpha, cellsTop);
+    procesDirichCells(concBack, alpha, cellsBack);
+    procesDirichCells(concBottom, alpha, cellsBottom);
+    procesDirichCells(concFront, alpha, cellsFront);
+    procesDirichCells(concTop, alpha, cellsTop);
+    procesDirichCells(concLeft, alpha, cellsLeft);
+    procesDirichCells(concRight, alpha, cellsRight);
 
     auto nonBoundCells = _sgrid->_typesCells.at("nonbound");
     for (int i = 0; i < nonBoundCells.size(); i++)
@@ -154,16 +238,32 @@ void Equation::cfdProcedure() {
     _local->calcTimeSteps();
     _local->calcAlphas();
 
+
     for (int i = 0; i < _local->_alphas.size(); i++) {
         std::swap(iCurr, iPrev);
         _convective->calcBetas(_concs[iPrev]);
+
+        // procesNoFlowFaces(_sgrid->_typesFaces.at("top"));
+        // procesNoFlowFaces(_sgrid->_typesFaces.at("bottom"));
+        // procesNoFlowFaces(_sgrid->_typesFaces.at("front"));
+        // procesNoFlowFaces(_sgrid->_typesFaces.at("back"));
+        procesNonBoundFaces(_sgrid->_typesFaces.at("nonbound"));
+
         fillMatrix(_local->_alphas[i]);
         calculateFreeVector(_local->_alphas[i]);
         calcConcsImplicit();
         Eigen::Map<Eigen::VectorXd> concCurr(new double[dim], dim);
         concCurr = _concs[iCurr];
         _concsTime.push_back(concCurr);
+
+        // std::cout << matrix << std::endl;
     }
+
+    // for (const auto&[face, faceN] : _coeffsMatrix)
+    //     for (const auto&[cell, cellCoeff] : faceN)
+    //         std::cout << "coeffs" << "[" << face << "][" << cell << "] = "
+    //                   << cellCoeff
+    //                   << std::endl;
 }
 
 std::vector<Eigen::Ref<Eigen::VectorXd>> Equation::getConcs() {

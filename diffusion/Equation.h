@@ -65,23 +65,29 @@ public:
 
     void setConcsIni(Eigen::Ref<Eigen::VectorXd> concsIni);
 
-    void fillMatrix(const double &alpha);
+    void procesNoFlowFaces(Eigen::Map<Eigen::VectorXi> noFlowFaces);
 
-    void calculateFreeVector(const double &alpha);
+    void procesNewmanFaces(const double &flowNewman,
+                           Eigen::Map<Eigen::VectorXi> newmanFaces);
+
+    void procesDirichCells(const double &concBound, const double &alpha,
+                           Eigen::Map<Eigen::VectorXi> boundCells);
+
+    void procesNonBoundFaces(Eigen::Map<Eigen::VectorXi> nonBoundFaces);
+
+    void fillMatrix(const double &alpha);
 
     void calcConcsIni();
 
-    void setDirichletToBound(const double &concBound, const double &alpha,
-                               Eigen::Map<Eigen::VectorXi> boundCells);
+    void calculateFreeVector(const double &alpha);
 
     void calcConcsImplicit();
 
     void calcConcsExplicit();
 
-    // temporary function, will be later provided by sgrid
-    void calcCellsGroup();
-
     void cfdProcedure();
+
+    // temporary function, will be later provided by sgrid
 
 
     std::shared_ptr<Props> _props;
@@ -97,12 +103,11 @@ public:
     std::vector<Eigen::Map<Eigen::VectorXd>> _concsTime;
     Eigen::Map<Eigen::VectorXd> _concsIni;
 
+    std::map<int, std::map<int, double>> _coeffsMatrix;
+    std::map<int, std::map<int, double>> _coeffsFreeVec;
+
     Matrix matrix;
     Eigen::Map<Eigen::VectorXd> freeVector;
-
-    // temporary arguments
-    std::vector<double> boundCells;
-    // std::vector<int> nonBoundCells;
 };
 
 #endif // EQUATION_H
