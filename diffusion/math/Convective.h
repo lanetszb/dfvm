@@ -54,6 +54,7 @@ public:
     std::shared_ptr<Props> _props;
     std::shared_ptr<Sgrid> _sgrid;
 
+    // ToDo: std vector
     Eigen::Map<Eigen::VectorXd> _betas;
 
 };

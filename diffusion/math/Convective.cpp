@@ -54,7 +54,7 @@ void Convective::calcBetas(Eigen::Ref<Eigen::VectorXd> concs) {
     auto &neighborsCells = _sgrid->_neighborsCells;
     // ToDO: iterate only over boundary cells
     for (int i = 0; i < _betas.size(); i++) {
-        auto &axis = _sgrid->_facesAxis[i];
+        auto &axis = _sgrid->_facesAxes[i];
         auto &conc0 = concs(neighborsCells.at(i)[0]);
         auto &conc1 = concs(neighborsCells.at(i)[1]);
 
@@ -65,7 +65,7 @@ void Convective::calcBetas(Eigen::Ref<Eigen::VectorXd> concs) {
             diffusivity = weighD("meanAverage", conc0, conc0);
 
         _betas[i] =
-                diffusivity * _sgrid->_faceS[axis] / _sgrid->_spacing[axis];
+                diffusivity * _sgrid->_facesSs[axis] / _sgrid->_spacing[axis];
     }
 }
 

@@ -70,7 +70,7 @@ void Equation::procesNewmanFaces(const double &flowNewman,
             _coeffsMatrix[newmanFaces[i]][neighborsCells[j]] = 0;
     }
 }
-
+// ToDo Ref instead of Map
 void Equation::procesNonBoundFaces(Eigen::Map<Eigen::VectorXi> nonBoundFaces) {
 
     for (int i = 0; i < nonBoundFaces.size(); i++) {

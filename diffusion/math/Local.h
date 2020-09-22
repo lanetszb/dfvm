@@ -56,6 +56,7 @@ public:
     std::shared_ptr<Props> _props;
     std::shared_ptr<Sgrid> _sgrid;
 
+    // ToDo: std::vectors
     Eigen::Map<Eigen::VectorXd> _alphas;
     Eigen::Map<Eigen::VectorXd> _timeSteps;
 
