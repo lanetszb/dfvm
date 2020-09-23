@@ -70,6 +70,7 @@
     %\newpage
 
     \section*{FVM Diffusion transient flow}
+    \subsection*{Single-phase one component}
     
 The employed model of diffusion is derived by substituting the first Fick's law into the continuity equation. In integral form, this model can be represented as follows:
 
@@ -123,5 +124,70 @@ The parameters $\Delta^{t}$ and $\Delta^{m}$ described by Eq. (\ref{eq:conductiv
     \end{cases}
     \end{eqnarray}
 where subscript signs $+$ and $-$ indicate the position of the finite-volume block relative to the normal direction of the current surface element $\Delta S$.
+
+ \subsection*{Single-phase two component}
+ Gas-coalbed system consists of the following mass balances for any component in the micro- and macropores:
+ 
+ \begin{eqnarray}
+ \begin{gathered}
+ \label{eq:diffusuin_multicomp_diff}
+  \left(\phi_{m}+\phi_{f}\right)\frac{\partial C_{i}}{\partial t} + \left(1-\phi_{m}-\phi_{f}\right)\frac{\partial C_{si}}{\partial t} = \\ \vec{\nabla} \left(\left(\phi_{m} + \phi_{f} \right)D_{ei} \vec{\nabla}C_{i} + \left(1-\phi_{m}-\phi_{f}\right) D_{si} \vec{\nabla}C_{s i}\right),
+   \end{gathered}
+ \end{eqnarray}
+ where $i$ - index of  a particular component, $C_{i}$~--~total free gas concentration, $\phi_{m}$ and $\phi_{f}$~--~are matrix and fracture porosities, respectively, $C_{si}$~--~adsorbed concentration, $D_{ei}$~--~effective molecular pore diffusion coefficient, $D_{si}$~--~surface molecular diffusion coefficient.
+ 
+ Knowing that
+ \begin{eqnarray}
+ \label{eq:variable_replace}
+ \frac{\partial C_{si}}{\partial t} =  \frac{dC_{si}}{dC_{i}}\frac{\partial C_{i}}{\partial t} = C'_{si}\frac{\partial C_{i}}{\partial t},
+ \end{eqnarray}
+ 
+  \begin{eqnarray}
+ \label{eq:variable_replace}
+\vec\nabla C_{si} =  \frac{dC_{si}}{dC_{i}}\vec\nabla C_{i} = C'_{si}\vec\nabla C_{i},
+ \end{eqnarray}
+ 
+  \begin{eqnarray}
+ \label{eq:conc_sorption}
+ C_{si} =  \frac{C_{s} b_{i}' C_{i}}{1+b_{1}'C_{1}+b_{2}'C_{2}},
+ \end{eqnarray}
+ 
+  \begin{eqnarray}
+ \label{eq:conc_sorption_deriv}
+ C_{si}' =  \frac{C_{s}b_{i}' \left(1+b_{1}'C_{1}+b_{2}'C_{2}\right) \pm C_{s}b_{i}'C_{i} \left(b_{1}'-b_{2}'\right)}{\left(1+b_{1}'C_{1}+b_{2}'C_{2}\right)^2},
+ \end{eqnarray}
+ 
+ And by applying the divergence theorem 
+  \begin{eqnarray}
+ \label{eq:diffusuin_multicomp_integral}
+ \int \limits_{V} \alpha \frac{\partial C_{i}}{\partial t} d V - \oint \limits_{S} \beta_{i} \vec{\nabla}C_{i} \; \vec{dS} = 0,
+ \end{eqnarray}
+where  
+ \begin{eqnarray}
+ \begin{gathered}
+ \label{eq:alpha}
+ \alpha  =  \left(\phi_{m}+\phi_{f}\right) + \left(1-\phi_{m}-\phi_{f}\right)C_{si}', \\ 
+ \beta_{i}  = \left(\phi_{m}+ \phi_{f} \right) D_{ei} + \left(1-\phi_{m}-\phi_{f}\right) C_{si}'D_{si},
+ \end{gathered}
+ \end{eqnarray}
+ 
+  \begin{eqnarray}
+ \begin{gathered}
+ \label{eq:alpha}
+ \alpha  =  \phi, \\ 
+ \beta_{i}  = \phi D_{i},
+ \end{gathered}
+ \end{eqnarray}
+ 
+   \begin{eqnarray}
+ \label{eq:diffusuin_multicomp_integral}
+ \int \limits_{V} \phi \frac{\partial C_{i}}{\partial t} d V - \oint \limits_{S} \phi D_{i} \vec{\nabla}C_{i} \; \vec{dS} = 0.
+ \end{eqnarray}
+ 
+ 
+ 
+ 
+ 
+ 
 
 \end{document}
