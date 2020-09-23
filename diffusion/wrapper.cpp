@@ -68,7 +68,6 @@ PYBIND11_MODULE(diffusion_bind, m) {
             .def_property("betas",
                           &Convective::getBetas, &Convective::setBetas);
 
-
     py::class_<Equation, std::shared_ptr<Equation>>(m, "Equation")
             .def(py::init<std::shared_ptr<Props>, std::shared_ptr<Sgrid>,
                          std::shared_ptr<Local>, std::shared_ptr<Convective>>(),
@@ -82,12 +81,15 @@ PYBIND11_MODULE(diffusion_bind, m) {
             .def_readwrite("dim", &Equation::dim)
             .def_readwrite("i_curr", &Equation::iCurr)
             .def_readwrite("i_prev", &Equation::iPrev)
+            .def_readwrite("bound_groups_dirich", &Equation::_boundGroupsDirich)
+            .def_readwrite("concs_bound_dirich", &Equation::_concsBoundDirich)
             .def_property("concs_ini",
                           &Equation::getConcsIni, &Equation::setConcsIni)
             .def_property("concs",
                           &Equation::getConcs, &Equation::setConcs)
             .def_property("concs_time",
                           &Equation::getConcsTime, &Equation::setConcsTime);
+
 
 }
 

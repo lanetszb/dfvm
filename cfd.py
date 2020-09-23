@@ -70,6 +70,14 @@ local = Local(props, sgrid)
 convective = Convective(props, sgrid)
 equation = Equation(props, sgrid, local, convective)
 
+equation.bound_groups_dirich = ['left', 'right',
+                                'top', 'bottom',
+                                'front', 'back']
+
+equation.concs_bound_dirich = {'left': float(10), 'right': float(20),
+                               'top': float(30), 'bottom': float(40),
+                               'front': float(50), 'back': float(60)}
+
 equation.cfd_procedure()
 
 os.system('rm -r inOut/*.vtu')

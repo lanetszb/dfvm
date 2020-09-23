@@ -42,52 +42,36 @@ Equation::Equation(std::shared_ptr<Props> props,
         matrix(dim, dim),
         freeVector(new double[dim], dim) {}
 
-void Equation::procesNoFlowFaces(Eigen::Map<Eigen::VectorXi> noFlowFaces) {
-    for (int i = 0; i < noFlowFaces.size(); i++) {
-        auto neighborsCells = _sgrid->_neighborsCells.at(noFlowFaces[i]);
-        for (int j = 0; j < neighborsCells.size(); j++)
-            _coeffsFreeVec[noFlowFaces[i]][neighborsCells[j]] = 0;
-    }
-
-    for (int i = 0; i < noFlowFaces.size(); i++) {
-        auto neighborsCells = _sgrid->_neighborsCells.at(noFlowFaces[i]);
-        for (int j = 0; j < neighborsCells.size(); j++)
-            _coeffsMatrix[noFlowFaces[i]][neighborsCells[j]] = 0;
-    }
-}
 
 void Equation::procesNewmanFaces(const double &flowNewman,
-                                 Eigen::Map<Eigen::VectorXi> newmanFaces) {
-    for (int i = 0; i < newmanFaces.size(); i++) {
-        auto neighborsCells = _sgrid->_neighborsCells.at(newmanFaces[i]);
-        for (int j = 0; j < neighborsCells.size(); j++)
-            _coeffsFreeVec[newmanFaces[i]][neighborsCells[j]] = flowNewman;
-    }
+                                 Eigen::Map<Eigen::VectorXui64> faces) {
 
-    for (int i = 0; i < newmanFaces.size(); i++) {
-        auto neighborsCells = _sgrid->_neighborsCells.at(newmanFaces[i]);
-        for (int j = 0; j < neighborsCells.size(); j++)
-            _coeffsMatrix[newmanFaces[i]][neighborsCells[j]] = 0;
-    }
-}
-// ToDo Ref instead of Map
-void Equation::procesNonBoundFaces(Eigen::Map<Eigen::VectorXi> nonBoundFaces) {
-
-    for (int i = 0; i < nonBoundFaces.size(); i++) {
-        auto neighborsCells = _sgrid->_neighborsCells.at(nonBoundFaces[i]);
-        for (int j = 0; j < neighborsCells.size(); j++) {
-            auto normal = _sgrid->_normalsNeighborsCells.at(
-                    nonBoundFaces[i])[j];
-            _coeffsMatrix[nonBoundFaces[i]][neighborsCells[j]] =
-                    normal * _convective->_betas[nonBoundFaces[i]];
+    for (int i = 0; i < faces.size(); i++) {
+        auto &face = faces[i];
+        auto &cells = _sgrid->_neighborsCells.at(face);
+        for (int j = 0; j < cells.size(); j++) {
+            auto &cell = cells[j];
+            _coeffsMatrix[face][cell] = 0;
+            _coeffsFreeVec[face][cell] = flowNewman;
         }
     }
 
-    for (int i = 0; i < nonBoundFaces.size(); i++) {
-        auto neighborsCells = _sgrid->_neighborsCells.at(nonBoundFaces[i]);
-        for (int j = 0; j < neighborsCells.size(); j++)
-            _coeffsFreeVec[nonBoundFaces[i]][neighborsCells[j]] = 0;
+}
+
+// ToDo Ref instead of Map
+void Equation::processNonBoundFaces(Eigen::Map<Eigen::VectorXui64> faces) {
+
+    for (int i = 0; i < faces.size(); i++) {
+        auto &face = faces[i];
+        auto &cells = _sgrid->_neighborsCells.at(face);
+        for (int j = 0; j < cells.size(); j++) {
+            auto &cell = cells[j];
+            auto &normal = _sgrid->_normalsNeighborsCells.at(face)[j];
+            _coeffsMatrix[face][cell] = normal * _convective->_betas[face];
+            _coeffsFreeVec[face][cell] = 0;
+        }
     }
+
 }
 
 void Equation::fillMatrix(const double &alpha) {
@@ -178,35 +162,26 @@ void Equation::fillMatrix(const double &alpha) {
     // }
 }
 
-void Equation::procesDirichCells(const double &concBound, const double &alpha,
-                                 Eigen::Map<Eigen::VectorXi> boundCells) {
+void Equation::procesDirichCells(const double &alpha,
+                                 std::vector<std::string> &boundGroups,
+                                 std::map<std::string, double> &concsBound) {
 
-    for (int i = 0; i < boundCells.size(); i++)
-        freeVector[boundCells[i]] = concBound * alpha;
+
+    for (int i = 0; i < boundGroups.size(); i++) {
+        auto &bound = boundGroups[i];
+        auto &conc = concsBound[bound];
+        auto cells = _sgrid->_typesCells.at(bound);
+        for (int j = 0; j < cells.size(); j++) {
+            auto cell = cells[j];
+            freeVector[cell] = conc * alpha;
+        }
+    }
+
 }
 
 void Equation::calculateFreeVector(const double &alpha) {
 
-    auto concBack = 40.0;
-    auto concBottom = 10.0;
-    auto concFront = 20.0;
-    auto concTop = 27.0;
-    auto concLeft = 30.0;
-    auto concRight = 15.0;
-
-    auto cellsBack = _sgrid->_typesCells.at("back");
-    auto cellsBottom = _sgrid->_typesCells.at("bottom");
-    auto cellsFront = _sgrid->_typesCells.at("front");
-    auto cellsTop = _sgrid->_typesCells.at("top");
-    auto cellsLeft = _sgrid->_typesCells.at("left");
-    auto cellsRight = _sgrid->_typesCells.at("right");
-
-    procesDirichCells(concBack, alpha, cellsBack);
-    procesDirichCells(concBottom, alpha, cellsBottom);
-    procesDirichCells(concFront, alpha, cellsFront);
-    procesDirichCells(concTop, alpha, cellsTop);
-    procesDirichCells(concLeft, alpha, cellsLeft);
-    procesDirichCells(concRight, alpha, cellsRight);
+    procesDirichCells(alpha, _boundGroupsDirich, _concsBoundDirich);
 
     auto nonBoundCells = _sgrid->_typesCells.at("nonbound");
     for (int i = 0; i < nonBoundCells.size(); i++)
@@ -247,7 +222,7 @@ void Equation::cfdProcedure() {
         // procesNoFlowFaces(_sgrid->_typesFaces.at("bottom"));
         // procesNoFlowFaces(_sgrid->_typesFaces.at("front"));
         // procesNoFlowFaces(_sgrid->_typesFaces.at("back"));
-        procesNonBoundFaces(_sgrid->_typesFaces.at("nonbound"));
+        processNonBoundFaces(_sgrid->_typesFaces.at("nonbound"));
 
         fillMatrix(_local->_alphas[i]);
         calculateFreeVector(_local->_alphas[i]);

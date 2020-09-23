@@ -65,15 +65,14 @@ public:
 
     void setConcsIni(Eigen::Ref<Eigen::VectorXd> concsIni);
 
-    void procesNoFlowFaces(Eigen::Map<Eigen::VectorXi> noFlowFaces);
-
     void procesNewmanFaces(const double &flowNewman,
-                           Eigen::Map<Eigen::VectorXi> newmanFaces);
+                           Eigen::Map<Eigen::VectorXui64> faces);
 
-    void procesDirichCells(const double &concBound, const double &alpha,
-                           Eigen::Map<Eigen::VectorXi> boundCells);
+    void procesDirichCells(const double &alpha,
+                           std::vector<std::string> &boundGroups,
+                           std::map<std::string, double> &concsBound);
 
-    void procesNonBoundFaces(Eigen::Map<Eigen::VectorXi> nonBoundFaces);
+    void processNonBoundFaces(Eigen::Map<Eigen::VectorXui64> faces);
 
     void fillMatrix(const double &alpha);
 
@@ -98,6 +97,9 @@ public:
     int dim;
     int iCurr;
     int iPrev;
+
+    std::vector<std::string> _boundGroupsDirich;
+    std::map<std::string, double> _concsBoundDirich;
 
     std::vector<Eigen::Map<Eigen::VectorXd>> _concs;
     std::vector<Eigen::Map<Eigen::VectorXd>> _concsTime;
