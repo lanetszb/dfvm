@@ -125,6 +125,44 @@ The parameters $\Delta^{t}$ and $\Delta^{m}$ described by Eq. (\ref{eq:conductiv
     \end{eqnarray}
 where subscript signs $+$ and $-$ indicate the position of the finite-volume block relative to the normal direction of the current surface element $\Delta S$.
 
+ \subsection*{Single-phase two component*}
+Gas-coalbed system consists of the following mass balances for any component in the micro- and macropores:
+
+\begin{eqnarray}
+\begin{gathered}
+\label{eq:diffusuin_multicomp_diff}
+\frac{\partial C_{i}}{\partial t} - \frac{\partial C_{si}}{\partial t} =  \vec{\nabla} D_{i} \vec{\nabla}C_{i},
+\end{gathered}
+\end{eqnarray}
+where $i$ - index of  a particular component, $C_{i}$~--~total free gas concentration, $C_{si}$~--~adsorbed concentration, $D_{i}$~--~effective molecular pore diffusion coefficient.
+
+Knowing that
+\begin{eqnarray}
+\label{eq:variable_replace}
+\frac{\partial C_{si}}{\partial t} =  \frac{dC_{si}}{dC_{i}}\frac{\partial C_{i}}{\partial t} = C'_{si}\frac{\partial C_{i}}{\partial t},
+\end{eqnarray}
+
+\begin{eqnarray}
+\label{eq:variable_replace}
+\vec\nabla C_{si} =  \frac{dC_{si}}{dC_{i}}\vec\nabla C_{i} = C'_{si}\vec\nabla C_{i},
+\end{eqnarray}
+
+\begin{eqnarray}
+\label{eq:conc_sorption}
+C_{si} =  \frac{C_{s} b_{i}' C_{i}}{1+b_{i}'C_{i}+b_{j}'C_{j}},
+\end{eqnarray}
+
+\begin{eqnarray}
+\label{eq:conc_sorption_deriv}
+C_{si}' =  \frac{C_{s}b_{i}' \left(1+b_{j}'\left(C_{i}+C_{j}\right)\right)}{\left(1+b_{i}'C_{i}+b_{j}'C_{j}\right)^2},
+\end{eqnarray}
+
+And by applying the divergence theorem 
+\begin{eqnarray}
+\label{eq:diffusuin_multicomp_integral}
+\int \limits_{V} (1-C_{si}') \frac{\partial C_{i}}{\partial t} dV - \oint \limits_{S} D_{i} \vec{\nabla}C_{i} \; \vec{dS} = 0.
+\end{eqnarray}
+
  \subsection*{Single-phase two component}
  Gas-coalbed system consists of the following mass balances for any component in the micro- and macropores:
  
@@ -184,10 +222,4 @@ where
  \int \limits_{V} \phi \frac{\partial C_{i}}{\partial t} d V - \oint \limits_{S} \phi D_{i} \vec{\nabla}C_{i} \; \vec{dS} = 0.
  \end{eqnarray}
  
- 
- 
- 
- 
- 
-
 \end{document}
