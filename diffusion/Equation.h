@@ -72,6 +72,9 @@ public:
                            std::vector<std::string> &boundGroups,
                            std::map<std::string, double> &concsBound);
 
+    std::vector<int> findNonDirichCells
+            (std::vector<std::string> &boundGroupsDirich);
+
     void processNonBoundFaces(Eigen::Map<Eigen::VectorXui64> faces);
 
     void fillMatrix(const double &alpha);
@@ -99,6 +102,7 @@ public:
     int iPrev;
 
     std::vector<std::string> _boundGroupsDirich;
+    std::vector<std::string> _boundGroupsNewman;
     std::map<std::string, double> _concsBoundDirich;
 
     std::vector<Eigen::Map<Eigen::VectorXd>> _concs;
