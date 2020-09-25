@@ -125,13 +125,13 @@ The parameters $\Delta^{t}$ and $\Delta^{m}$ described by Eq. (\ref{eq:conductiv
     \end{eqnarray}
 where subscript signs $+$ and $-$ indicate the position of the finite-volume block relative to the normal direction of the current surface element $\Delta S$.
 
- \subsection*{Single-phase two component*}
+ \subsection*{Single-phase two component (only Langmuir)}
 Gas-coalbed system consists of the following mass balances for any component in the micro- and macropores:
 
 \begin{eqnarray}
 \begin{gathered}
 \label{eq:diffusuin_multicomp_diff}
-\frac{\partial C_{i}}{\partial t} - \frac{\partial C_{si}}{\partial t} =  \vec{\nabla} D_{i} \vec{\nabla}C_{i},
+\frac{\partial C_{i}}{\partial t} +  \frac{1 - \phi}{\phi} \frac{\partial C_{si}}{\partial t} = \vec{\nabla} D_{i} \vec{\nabla}C_{i},
 \end{gathered}
 \end{eqnarray}
 where $i$ - index of  a particular component, $C_{i}$~--~total free gas concentration, $C_{si}$~--~adsorbed concentration, $D_{i}$~--~effective molecular pore diffusion coefficient.
@@ -140,11 +140,6 @@ Knowing that
 \begin{eqnarray}
 \label{eq:variable_replace}
 \frac{\partial C_{si}}{\partial t} =  \frac{dC_{si}}{dC_{i}}\frac{\partial C_{i}}{\partial t} = C'_{si}\frac{\partial C_{i}}{\partial t},
-\end{eqnarray}
-
-\begin{eqnarray}
-\label{eq:variable_replace}
-\vec\nabla C_{si} =  \frac{dC_{si}}{dC_{i}}\vec\nabla C_{i} = C'_{si}\vec\nabla C_{i},
 \end{eqnarray}
 
 \begin{eqnarray}
@@ -160,19 +155,19 @@ C_{si}' =  \frac{C_{s}b_{i}' \left(1+b_{j}'\left(C_{i}+C_{j}\right)\right)}{\lef
 And by applying the divergence theorem 
 \begin{eqnarray}
 \label{eq:diffusuin_multicomp_integral}
-\int \limits_{V} (1-C_{si}') \frac{\partial C_{i}}{\partial t} dV - \oint \limits_{S} D_{i} \vec{\nabla}C_{i} \; \vec{dS} = 0.
+\int \limits_{V} (1+\frac{1 - \phi}{\phi}C_{si}') \frac{\partial C_{i}}{\partial t} dV - \oint \limits_{S} D_{i} \vec{\nabla}C_{i} \; \vec{dS} = 0.
 \end{eqnarray}
 
- \subsection*{Single-phase two component}
+ \subsection*{Single-phase two component (Fick and Langmuir)}
  Gas-coalbed system consists of the following mass balances for any component in the micro- and macropores:
  
  \begin{eqnarray}
  \begin{gathered}
  \label{eq:diffusuin_multicomp_diff}
-  \left(\phi_{m}+\phi_{f}\right)\frac{\partial C_{i}}{\partial t} + \left(1-\phi_{m}-\phi_{f}\right)\frac{\partial C_{si}}{\partial t} = \\ \vec{\nabla} \left(\left(\phi_{m} + \phi_{f} \right)D_{ei} \vec{\nabla}C_{i} + \left(1-\phi_{m}-\phi_{f}\right) D_{si} \vec{\nabla}C_{s i}\right),
+  \phi\frac{\partial C_{i}}{\partial t} + \left(1-\phi\right)\frac{\partial C_{si}}{\partial t} = \vec{\nabla} \left(\phi D_{fi} \vec{\nabla}C_{i} + \left(1-\phi \right) D_{si} \vec{\nabla}C_{s i}\right),
    \end{gathered}
  \end{eqnarray}
- where $i$ - index of  a particular component, $C_{i}$~--~total free gas concentration, $\phi_{m}$ and $\phi_{f}$~--~are matrix and fracture porosities, respectively, $C_{si}$~--~adsorbed concentration, $D_{ei}$~--~effective molecular pore diffusion coefficient, $D_{si}$~--~surface molecular diffusion coefficient.
+ where $i$ - index of  a particular component, $C_{i}$~--~total free gas concentration, $\phi$~--~is total porosity, $C_{si}$~--~adsorbed concentration, $D_{fi}$~--~effective molecular pore diffusion coefficient, $D_{si}$~--~surface molecular diffusion coefficient.
  
  Knowing that
  \begin{eqnarray}
@@ -204,22 +199,10 @@ where
  \begin{eqnarray}
  \begin{gathered}
  \label{eq:alpha}
- \alpha  =  \left(\phi_{m}+\phi_{f}\right) + \left(1-\phi_{m}-\phi_{f}\right)C_{si}', \\ 
- \beta_{i}  = \left(\phi_{m}+ \phi_{f} \right) D_{ei} + \left(1-\phi_{m}-\phi_{f}\right) C_{si}'D_{si},
+ \alpha_{i}  =  \phi + \left(1-\phi \right)C_{si}', \\ 
+ \beta_{i}  = \phi D_{fi} + \left(1-\phi \right) C_{si}'D_{fi}.
  \end{gathered}
  \end{eqnarray}
- 
-  \begin{eqnarray}
- \begin{gathered}
- \label{eq:alpha}
- \alpha  =  \phi, \\ 
- \beta_{i}  = \phi D_{i},
- \end{gathered}
- \end{eqnarray}
- 
-   \begin{eqnarray}
- \label{eq:diffusuin_multicomp_integral}
- \int \limits_{V} \phi \frac{\partial C_{i}}{\partial t} d V - \oint \limits_{S} \phi D_{i} \vec{\nabla}C_{i} \; \vec{dS} = 0.
- \end{eqnarray}
+
  
 \end{document}
