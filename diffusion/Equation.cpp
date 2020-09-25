@@ -74,43 +74,48 @@ void Equation::processNonBoundFaces(Eigen::Map<Eigen::VectorXui64> faces) {
 
 }
 
+std::vector<int> Equation::groupVecsByKeys
+        (std::vector<std::string> &groups) {
+
+    std::vector<int> groupedCells;
+    for (auto &bound : groups) {
+        auto cells = _sgrid->_typesCells.at(bound);
+        auto position = groupedCells.end();
+        groupedCells.insert(position, cells.data(),
+                            cells.data() + cells.size());
+    }
+
+    return groupedCells;
+}
+
+
 std::vector<int> Equation::findNonDirichCells
         (std::vector<std::string> &boundGroupsDirich) {
 
-    std::vector<int> dirichCells;
-    for (auto &bound : boundGroupsDirich) {
-        auto cells = _sgrid->_typesCells.at(bound);
-        auto position = dirichCells.end();
-        dirichCells.insert(position, cells.data(),
-                           cells.data() + cells.size());
-    }
+    std::vector<int> dirichCells = groupVecsByKeys(boundGroupsDirich);
 
-    std::vector<std::string> boundGroupsNonDirich = {"top", "bottom",
-                                                     "front", "back",
-                                                     "nonbound"};
+    std::vector<std::string> groupsNonDirich;
+    auto allCells = _sgrid->_typesCells;
+    for (auto &type : allCells)
+        for (auto &typeDirich : boundGroupsDirich) {
+            if (typeDirich != type.first)
+                groupsNonDirich.push_back(type.first);
+        }
 
-    std::vector<int> nonDirichCellsDump;
-    for (auto &bound : boundGroupsNonDirich) {
-        auto cells = _sgrid->_typesCells.at(bound);
-        auto position = nonDirichCellsDump.end();
-        nonDirichCellsDump.insert(position, cells.data(),
-                              cells.data() + cells.size());
-    }
+    std::vector<int> nonDirichCellsDump = groupVecsByKeys(groupsNonDirich);
 
     sort(dirichCells.begin(), dirichCells.end());
     sort(nonDirichCellsDump.begin(), nonDirichCellsDump.end());
-    nonDirichCellsDump.erase(unique(nonDirichCellsDump.begin(), nonDirichCellsDump.end()),
-                             nonDirichCellsDump.end());
+    nonDirichCellsDump.erase(
+            unique(nonDirichCellsDump.begin(), nonDirichCellsDump.end()),
+            nonDirichCellsDump.end());
 
     std::vector<int> nonDirichCells;
 
-    std::set_difference(std::begin(nonDirichCellsDump), std::end(nonDirichCellsDump),
+    std::set_difference(std::begin(nonDirichCellsDump),
+                        std::end(nonDirichCellsDump),
                         std::begin(dirichCells), std::end(dirichCells),
                         std::back_inserter(nonDirichCells));
-
-    for (auto &cell : nonDirichCells)
-        std::cout << cell << ' ';
-    std::cout << std::endl;
 
     return nonDirichCells;
 }

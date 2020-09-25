@@ -51,10 +51,15 @@ PYBIND11_MODULE(diffusion_bind, m) {
 
             .def("calc_time_steps", &Local::calcTimeSteps)
             .def("calc_alphas", &Local::calcAlphas)
-            .def_property("time_steps",
-                          &Local::getTimeSteps, &Local::setTimeSteps)
-            .def_property("alphas",
-                          &Local::getAlphas, &Local::setAlphas);
+            .def_readwrite("time_steps", &Local::_timeSteps)
+            .def_readwrite("alphas", &Local::_alphas);
+
+
+
+    // .def_property("time_steps",
+    //               &Local::getTimeSteps, &Local::setTimeSteps)
+    // .def_property("alphas",
+    //               &Local::getAlphas, &Local::setAlphas);
 
 
     py::class_<Convective, std::shared_ptr<Convective>>(m, "Convective")
@@ -65,8 +70,7 @@ PYBIND11_MODULE(diffusion_bind, m) {
             .def("weigh_D", &Convective::weighD, "method"_a, "conc_first"_a,
                  "conc_second"_a)
             .def("calc_betas", &Convective::calcBetas, "concs"_a)
-            .def_property("betas",
-                          &Convective::getBetas, &Convective::setBetas);
+            .def_readwrite("betas", &Convective::_betas);
 
     py::class_<Equation, std::shared_ptr<Equation>>(m, "Equation")
             .def(py::init<std::shared_ptr<Props>, std::shared_ptr<Sgrid>,

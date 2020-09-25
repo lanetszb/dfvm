@@ -29,7 +29,7 @@ Convective::Convective(std::shared_ptr<Props> props,
                        std::shared_ptr<Sgrid> sgrid) :
         _props(props),
         _sgrid(sgrid),
-        _betas(new double[_sgrid->_facesN], _sgrid->_facesN) {}
+        _betas(_sgrid->_facesN) {}
 
 double Convective::weighD(const std::string &method, const double &concFirst,
                           const double &concSecond) {
@@ -52,7 +52,6 @@ double Convective::weighD(const std::string &method, const double &concFirst,
 void Convective::calcBetas(Eigen::Ref<Eigen::VectorXd> concs) {
 
     auto &neighborsCells = _sgrid->_neighborsCells;
-    // ToDO: iterate only over boundary cells
     for (int i = 0; i < _betas.size(); i++) {
         auto &axis = _sgrid->_facesAxes[i];
         auto &conc0 = concs(neighborsCells.at(i)[0]);
@@ -67,15 +66,4 @@ void Convective::calcBetas(Eigen::Ref<Eigen::VectorXd> concs) {
         _betas[i] =
                 diffusivity * _sgrid->_facesSs[axis] / _sgrid->_spacing[axis];
     }
-}
-
-Eigen::Ref<Eigen::VectorXd> Convective::getBetas() {
-    return _betas;
-}
-
-void Convective::setBetas(Eigen::Ref<Eigen::VectorXd> betas) {
-    if (_betas.data() != betas.data())
-        delete _betas.data();
-    new(&_betas) Eigen::Map<Eigen::VectorXd>(betas.data(),
-                                             betas.size());
 }

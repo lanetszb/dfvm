@@ -41,14 +41,6 @@ public:
 
     virtual ~Local() {}
 
-    Eigen::Ref<Eigen::VectorXd> getTimeSteps();
-
-    void setTimeSteps(Eigen::Ref<Eigen::VectorXd> timeSteps);
-
-    Eigen::Ref<Eigen::VectorXd> getAlphas();
-
-    void setAlphas(Eigen::Ref<Eigen::VectorXd> alphas);
-
     void calcTimeSteps();
 
     void calcAlphas();
@@ -56,9 +48,8 @@ public:
     std::shared_ptr<Props> _props;
     std::shared_ptr<Sgrid> _sgrid;
 
-    // ToDo: std::vectors
-    Eigen::Map<Eigen::VectorXd> _alphas;
-    Eigen::Map<Eigen::VectorXd> _timeSteps;
+    std::vector<double> _alphas;
+    std::vector<double> _timeSteps;
 
 };
 

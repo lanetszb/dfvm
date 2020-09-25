@@ -36,10 +36,7 @@
 #include "math/Convective.h"
 #include <sgrid/Sgrid.h>
 
-// ToDo: remove
-typedef Eigen::Triplet<double> Triplet;
 typedef Eigen::SparseMatrix<double, Eigen::RowMajor> Matrix;
-typedef Matrix::InnerIterator MatrixIterator;
 typedef Eigen::BiCGSTAB<Eigen::SparseMatrix<double>> BiCGSTAB;
 
 class Equation {
@@ -74,6 +71,9 @@ public:
 
     std::vector<int> findNonDirichCells
             (std::vector<std::string> &boundGroupsDirich);
+
+    std::vector<int> groupVecsByKeys
+            (std::vector<std::string> &groups);
 
     void processNonBoundFaces(Eigen::Map<Eigen::VectorXui64> faces);
 

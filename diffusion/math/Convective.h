@@ -42,10 +42,6 @@ public:
 
     virtual ~Convective() {}
 
-    Eigen::Ref<Eigen::VectorXd> getBetas();
-
-    void setBetas(Eigen::Ref<Eigen::VectorXd> betas);
-
     void calcBetas(Eigen::Ref<Eigen::VectorXd> concs);
 
     double weighD(const std::string &method, const double &concFirst,
@@ -54,8 +50,7 @@ public:
     std::shared_ptr<Props> _props;
     std::shared_ptr<Sgrid> _sgrid;
 
-    // ToDo: std vector
-    Eigen::Map<Eigen::VectorXd> _betas;
+    std::vector<double> _betas;
 
 };
 

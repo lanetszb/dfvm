@@ -23,13 +23,10 @@
 
 #include "Local.h"
 #include <algorithm>
-#include <iterator>
 
 Local::Local(std::shared_ptr<Props> props, std::shared_ptr<Sgrid> sgrid) :
         _props(props),
-        _sgrid(sgrid),
-        _alphas(new double, 1),
-        _timeSteps(new double, 1) {}
+        _sgrid(sgrid) {}
 
 void Local::calcTimeSteps() {
 
@@ -38,41 +35,17 @@ void Local::calcTimeSteps() {
     double division = time / timeStep;
     double fullStepsN;
     auto lastStep = std::modf(division, &fullStepsN);
-    auto localTimeSteps = std::vector<double>(fullStepsN, timeStep);
+
+    _timeSteps.clear();
+    _timeSteps = std::vector<double>(fullStepsN, timeStep);
     if (lastStep > 0)
-        localTimeSteps.push_back(lastStep * timeStep);
-
-    auto array = new double[localTimeSteps.size()];
-    std::copy(std::begin(localTimeSteps), std::end(localTimeSteps), array);
-
-    delete _timeSteps.data();
-    new(&_timeSteps) Eigen::Map<Eigen::VectorXd>(array, localTimeSteps.size());
+        _timeSteps.push_back(lastStep * timeStep);
 }
 
 void Local::calcAlphas() {
 
-    delete _alphas.data();
-    auto array = new double[_timeSteps.size()];
+    _alphas.clear();
 
-    new(&_alphas) Eigen::Map<Eigen::VectorXd>(array, _timeSteps.size());
-
-    _alphas = _sgrid->_cellV * _timeSteps.cwiseInverse();
-}
-
-Eigen::Ref<Eigen::VectorXd> Local::getTimeSteps() {
-    return _timeSteps;
-}
-
-void Local::setTimeSteps(Eigen::Ref<Eigen::VectorXd> timeSteps) {
-    new(&_timeSteps) Eigen::Map<Eigen::VectorXd>(timeSteps.data(),
-                                                 timeSteps.size());
-}
-
-Eigen::Ref<Eigen::VectorXd> Local::getAlphas() {
-    return _alphas;
-}
-
-void Local::setAlphas(Eigen::Ref<Eigen::VectorXd> alphas) {
-    new(&_alphas) Eigen::Map<Eigen::VectorXd>(alphas.data(),
-                                              alphas.size());
+    for (int i = 0; i < _timeSteps.size(); i++)
+        _alphas.push_back(_sgrid->_cellV / _timeSteps[i]);
 }

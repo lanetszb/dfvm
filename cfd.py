@@ -57,7 +57,7 @@ concs_arrays = {"concs_array1": concs_array1,
                 "concs_array2": concs_array2}
 
 sgrid.cells_arrays = concs_arrays
-time_period = float(200.)  # sec
+time_period = float(201.)  # sec
 time_step = 5.0  # sec
 d_coeff_a = 0.0  # m2/sec
 d_coeff_b = 3.E-1  # m2/sec
@@ -80,23 +80,23 @@ equation = Equation(props, sgrid, local, convective)
 
 equation.bound_groups_dirich = ['left', 'right']
 
-equation.concs_bound_dirich = {'left': float(20), 'right': float(20)}
+equation.concs_bound_dirich = {'left': float(10), 'right': float(20)}
 
 equation.cfd_procedure()
 
-# os.system('rm -r inOut/*.vtu')
-# os.system('rm -r inOut/*.pvd')
-# concs_dict = dict()
-# file_name = 'inOut/collection.pvd'
-# files_names = list()
-# files_descriptions = list()
-# for i in range(len(local.alphas)):
-#     sgrid.cells_arrays = {'conc': equation.concs_time[i]}
-#     files_names.append(str(i) + '.vtu')
-#     files_descriptions.append(str(i))
-#     sgrid.save('inOut/' + files_names[i])
-#
-# save_files_collection_to_file(file_name, files_names, files_descriptions)
+os.system('rm -r inOut/*.vtu')
+os.system('rm -r inOut/*.pvd')
+concs_dict = dict()
+file_name = 'inOut/collection.pvd'
+files_names = list()
+files_descriptions = list()
+for i in range(len(local.alphas)):
+    sgrid.cells_arrays = {'conc': equation.concs_time[i]}
+    files_names.append(str(i) + '.vtu')
+    files_descriptions.append(str(i))
+    sgrid.save('inOut/' + files_names[i])
+
+save_files_collection_to_file(file_name, files_names, files_descriptions)
 
 # conc analyt
 # L = 10
