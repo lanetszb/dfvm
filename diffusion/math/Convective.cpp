@@ -49,8 +49,9 @@ double Convective::weighD(const std::string &method, const double &concFirst,
     } else exit(0);
 }
 
-void Convective::calcBetas(Eigen::Ref<Eigen::VectorXd> concs) {
+void Convective::calcBetas(Eigen::Ref<Eigen::VectorXd> concs, double &time) {
 
+    clock_t tStart = clock();
     auto &neighborsCells = _sgrid->_neighborsCells;
     for (int i = 0; i < _betas.size(); i++) {
         auto &axis = _sgrid->_facesAxes[i];
@@ -65,5 +66,7 @@ void Convective::calcBetas(Eigen::Ref<Eigen::VectorXd> concs) {
 
         _betas[i] =
                 diffusivity * _sgrid->_facesSs[axis] / _sgrid->_spacing[axis];
+
     }
+    time += (double) (clock() - tStart);
 }

@@ -69,7 +69,7 @@ PYBIND11_MODULE(diffusion_bind, m) {
 
             .def("weigh_D", &Convective::weighD, "method"_a, "conc_first"_a,
                  "conc_second"_a)
-            .def("calc_betas", &Convective::calcBetas, "concs"_a)
+            // .def("calc_betas", &Convective::calcBetas, "concs"_a)
             .def_readwrite("betas", &Convective::_betas);
 
     py::class_<Equation, std::shared_ptr<Equation>>(m, "Equation")

@@ -36,7 +36,9 @@
 #include "math/Convective.h"
 #include <sgrid/Sgrid.h>
 
+typedef Eigen::Triplet<double> Triplet;
 typedef Eigen::SparseMatrix<double, Eigen::RowMajor> Matrix;
+typedef Matrix::InnerIterator MatrixIterator;
 typedef Eigen::BiCGSTAB<Eigen::SparseMatrix<double>> BiCGSTAB;
 
 class Equation {
@@ -67,7 +69,8 @@ public:
 
     void procesDirichCells(const double &alpha,
                            std::vector<std::string> &boundGroups,
-                           std::map<std::string, double> &concsBound);
+                           std::map<std::string, double> &concsBound,
+                           double &time);
 
     std::vector<int> findNonDirichCells
             (std::vector<std::string> &boundGroupsDirich);
@@ -75,22 +78,19 @@ public:
     std::vector<int> groupVecsByKeys
             (std::vector<std::string> &groups);
 
-    void processNonBoundFaces(Eigen::Map<Eigen::VectorXui64> faces);
+    void processNonBoundFaces(Eigen::Ref<Eigen::VectorXui64> faces);
 
-    void fillMatrix(const double &alpha);
+    void fillMatrix(const double &alpha, std::map<std::string, double> &times);
 
     void calcConcsIni();
 
-    void calculateFreeVector(const double &alpha);
-
-    void calcConcsImplicit();
+    void calcConcsImplicit(double &time);
 
     void calcConcsExplicit();
 
     void cfdProcedure();
 
     // temporary function, will be later provided by sgrid
-
 
     std::shared_ptr<Props> _props;
     std::shared_ptr<Sgrid> _sgrid;

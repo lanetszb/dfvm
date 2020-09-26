@@ -42,7 +42,7 @@ public:
 
     virtual ~Convective() {}
 
-    void calcBetas(Eigen::Ref<Eigen::VectorXd> concs);
+    void calcBetas(Eigen::Ref<Eigen::VectorXd> concs, double &time);
 
     double weighD(const std::string &method, const double &concFirst,
                   const double &concSecond);
