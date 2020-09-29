@@ -26,8 +26,7 @@
 #include <vector>
 
 
-Props::Props(
-        const std::map<std::string, std::variant<int, double>> &params)
+Props::Props(const std::map<std::string, std::variant<int, double>> &params)
 
         : _params(params) {}
 

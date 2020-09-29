@@ -32,16 +32,12 @@ current_path = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(current_path, '../'))
 print(current_path)
 
-from diffusion_bind import Props
-from diffusion_bind import Local
-from diffusion_bind import Convective
-from diffusion_bind import Equation
-from sgrid import Sgrid
-from sgrid import save_files_collection_to_file
+from diffusion_bind import Props, Local, Convective, Equation
+from sgrid import Sgrid, save_files_collection_to_file
 
-points_dims = np.array([50, 50, 50], dtype=np.int32)
-points_origin = np.array([0., 0., 0.], dtype=np.float)
-spacing = np.array([1., 1., 1.], dtype=np.float)
+points_dims = [10, 10, 10]
+points_origin = [0., 0., 0.]
+spacing = [1., 1., 1.]
 
 sgrid = Sgrid(points_dims, points_origin, spacing)
 points_array = np.random.rand(sgrid.points_N)
@@ -69,7 +65,6 @@ props = Props(params)
 local = Local(props, sgrid)
 convective = Convective(props, sgrid)
 
-
 equation = Equation(props, sgrid, local, convective)
 equation.bound_groups_dirich = ['left', 'right']
 equation.concs_bound_dirich = {'left': float(10), 'right': float(20)}
@@ -81,9 +76,6 @@ equation.cfd_procedure()
 # equation.concs_bound_dirich = {'left': float(10), 'right': float(20),
 #                                'top': float(30), 'bottom': float(40),
 #                                'front': float(50), 'back': float(60)}
-
-
-
 
 
 os.system('rm -r inOut/*.vtu')

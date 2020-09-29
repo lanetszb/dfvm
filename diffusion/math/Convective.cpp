@@ -31,19 +31,19 @@ Convective::Convective(std::shared_ptr<Props> props,
         _sgrid(sgrid),
         _betas(_sgrid->_facesN) {}
 
-double Convective::weighD(const std::string &method, const double &concFirst,
-                          const double &concSecond) {
+double Convective::weighD(const std::string &method, const double &conc0,
+                          const double &conc1) {
 
     if (method == "meanAverage") {
-        auto conc = (concFirst + concSecond) / 2;
+        auto conc = (conc0 + conc1) / 2;
         return _props->calcD(conc);
 
     } else if (method == "meanHarmonic") {
-        auto conc = 2. * concFirst * concSecond / (concFirst + concSecond);
+        auto conc = 2. * conc0 * conc1 / (conc0 + conc1);
         return _props->calcD(conc);
 
     } else if (method == "upWind") {
-        auto conc = std::max(concFirst, concSecond);
+        auto conc = std::max(conc0, conc1);
         return _props->calcD(conc);
 
     } else exit(0);
@@ -52,18 +52,23 @@ double Convective::weighD(const std::string &method, const double &concFirst,
 void Convective::calcBetas(Eigen::Ref<Eigen::VectorXd> concs, double &time) {
 
     clock_t tStart = clock();
+
     auto &neighborsCells = _sgrid->_neighborsCells;
+
     for (int i = 0; i < _betas.size(); i++) {
-        auto &axis = _sgrid->_facesAxes[i];
-        auto &conc0 = concs(neighborsCells.at(i)[0]);
-        auto &conc1 = concs(neighborsCells.at(i)[1]);
+        auto &neighborsCell = neighborsCells[i];
+        auto &conc0 = concs(neighborsCell[0]);
+        auto &conc1 = concs(neighborsCell[1]);
 
         double diffusivity;
-        if (neighborsCells.at(i).size() == 2)
+        if (neighborsCells[i].size() == 2) {
             diffusivity = weighD("meanAverage", conc0, conc1);
-        else
+        }
+        else {
             diffusivity = weighD("meanAverage", conc0, conc0);
+        }
 
+        auto &axis = _sgrid->_facesAxes[i];
         _betas[i] =
                 diffusivity * _sgrid->_facesSs[axis] / _sgrid->_spacing[axis];
 

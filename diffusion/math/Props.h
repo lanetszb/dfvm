@@ -33,9 +33,8 @@
 class Props {
 
 public:
-
-    explicit Props(
-            const std::map<std::string, std::variant<int, double>> &params);
+    // ToDo: class Props as map, calcD to Convective
+    explicit Props(const std::map<std::string, std::variant<int, double>> &params);
 
     virtual ~Props() {}
 

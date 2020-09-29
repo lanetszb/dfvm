@@ -43,9 +43,7 @@ void Local::calcTimeSteps() {
 }
 
 void Local::calcAlphas() {
-
     _alphas.clear();
-
-    for (int i = 0; i < _timeSteps.size(); i++)
-        _alphas.push_back(_sgrid->_cellV / _timeSteps[i]);
+    for (auto &timeStep: _timeSteps)
+        _alphas.push_back(_sgrid->_cellV / timeStep);
 }

@@ -64,13 +64,13 @@ public:
 
     void setConcsIni(Eigen::Ref<Eigen::VectorXd> concsIni);
 
-    void procesNewmanFaces(const double &flowNewman,
-                           Eigen::Map<Eigen::VectorXui64> faces);
+    void processNewmanFaces(const double &flowNewman,
+                            Eigen::Map<Eigen::VectorXui64> faces);
 
-    void procesDirichCells(const double &alpha,
-                           std::vector<std::string> &boundGroups,
-                           std::map<std::string, double> &concsBound,
-                           double &time);
+    void processDirichCells(const double &alpha,
+                            std::vector<std::string> &boundGroups,
+                            std::map<std::string, double> &concsBound,
+                            double &time);
 
     std::vector<int> findNonDirichCells
             (std::vector<std::string> &boundGroupsDirich);
