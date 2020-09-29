@@ -76,9 +76,9 @@ The employed model of diffusion is derived by substituting the first Fick's law 
 
     \begin{eqnarray}
         \label{eq:conductivity_integral}
-        \int \limits_{V} \frac{\partial C}{\partial t} d V - \oint \limits_{S} D \vec{\nabla}C \; \vec{dS} = 0,
+        \int \limits_{V} a \frac{\partial C}{\partial t} d V - \oint \limits_{S} b \vec{\nabla}C \; \vec{dS} = 0,
     \end{eqnarray}
-    where $C = C\left(\vec{x}, t\right)$~--~concentration, $\vec{x}$ ~--~radius vectors, $t$~--~time, $V$~--~volume, $D$~--~diffusion coefficient~(diffusivity), $S$~--~surface area.
+    where $C = C\left(\vec{x}, t\right)$~--~concentration, $\vec{x}$ ~--~radius vectors, $a = a\left(C\right)$ and can be treated as porosity, $t$~--~time, $V$~--~volume, $b = b\left(C\right)$ and can be treated as a product of porosity and diffusivity, $S$~--~surface area.
     
 Equation (\ref{eq:conductivity_integral}) describes the diffusive flow in general. The relevant boundary and initial conditions should be chosen in order to specialize this equation for the research purposes. Thus, the following boundary conditions have been applied:
     
@@ -88,7 +88,7 @@ Equation (\ref{eq:conductivity_integral}) describes the diffusive flow in genera
      \end{eqnarray}
     \begin{eqnarray}
       \label{eq:conductivity_bound}
-       C\left(\vec{x}, t\right)\Big|_{\mathit{\Gamma}_D} \!\!= \tilde{C}\left(\vec{x}, t\right), \; D \vec{\nabla}C \left(\vec{x}, t\right)\Big|_{\mathit{\Gamma}_N} \!\!= \vec{G}\left(\vec{x}, t\right),
+       C\left(\vec{x}, t\right)\Big|_{\mathit{\Gamma}_D} \!\!= \tilde{C}\left(\vec{x}, t\right), \; b \vec{\nabla}C \left(\vec{x}, t\right)\Big|_{\mathit{\Gamma}_N} \!\!= \vec{G}\left(\vec{x}, t\right),
     \end{eqnarray}
 where $\mathit{\Gamma} = \mathit{\Gamma_D} + \mathit{\Gamma_N}$ is the boundary region.
 
@@ -110,10 +110,10 @@ The finite-volume representation of Eqs. (\ref{eq:conductivity_integral}), (\ref
 Parameters $\alpha$ and $\beta$ are expressed as follows:
     \begin{eqnarray}
         \label{eq:alpha_beta}
-        \alpha = \frac{\Delta V}{\Delta t}, \;
-        \beta= \frac{\overline{D} \Delta S}{\Delta L},
+        \alpha = a^n\frac{\Delta V}{\Delta t}, \;
+        \beta= \overline{b}^n\frac{\Delta S}{\Delta L},
     \end{eqnarray}
-where $\Delta V$~--~volume of a particular grid-block, $\Delta t$~--~numerical time step, $\overline{D}$~--~average diffusivity, $\Delta L$~--~distance between centres of two neighbouring grid-blocks whit respect to a particular surface, $\Delta S$~--~surface bounding a grid-block (positive or negative sign is defined by the normal direction).
+where $\Delta V$~--~volume of a particular grid-block, $\Delta t$~--~numerical time step, $a^n = a\left(C^n\right)$, $b^n = b\left(C^n\right)$, $\overline{b}$~--~average $b$, $\Delta L$~--~distance between centres of two neighbouring grid-blocks whit respect to a particular surface, $\Delta S$~--~surface bounding a grid-block (positive or negative sign is defined by the normal direction).
 
 The parameters $\Delta^{t}$ and $\Delta^{m}$ described by Eq. (\ref{eq:conductivity_num}) are expressed as follows:
     \begin{eqnarray}
@@ -125,7 +125,7 @@ The parameters $\Delta^{t}$ and $\Delta^{m}$ described by Eq. (\ref{eq:conductiv
     \end{eqnarray}
 where subscript signs $+$ and $-$ indicate the position of the finite-volume block relative to the normal direction of the current surface element $\Delta S$.
 
- \subsection*{Single-phase two component (only Langmuir)}
+ \subsection*{Single-phase two component (Langmuir only)}
 Gas-coalbed system consists of the following mass balances for any component in the micro- and macropores:
 
 \begin{eqnarray}
@@ -138,7 +138,7 @@ where $i$ - index of  a particular component, $C_{i}$~--~total free gas concentr
 
 Knowing that
 \begin{eqnarray}
-\label{eq:variable_replace}
+\label{eq:variable_replace_timeder}
 \frac{\partial C_{si}}{\partial t} =  \frac{dC_{si}}{dC_{i}}\frac{\partial C_{i}}{\partial t} = C'_{si}\frac{\partial C_{i}}{\partial t},
 \end{eqnarray}
 
@@ -151,11 +151,17 @@ C_{si} =  \frac{C_{s} b_{i}' C_{i}}{1+b_{i}'C_{i}+b_{j}'C_{j}},
 \label{eq:conc_sorption_deriv}
 C_{si}' =  \frac{C_{s}b_{i}' \left(1+b_{j}'\left(C_{i}+C_{j}\right)\right)}{\left(1+b_{i}'C_{i}+b_{j}'C_{j}\right)^2},
 \end{eqnarray}
-
-And by applying the divergence theorem 
+and by applying the divergence theorem, the following equation can be obtained
 \begin{eqnarray}
 \label{eq:diffusuin_multicomp_integral}
-\int \limits_{V} (1+\frac{1 - \phi}{\phi}C_{si}') \frac{\partial C_{i}}{\partial t} dV - \oint \limits_{S} D_{i} \vec{\nabla}C_{i} \; \vec{dS} = 0.
+\int \limits_{V} \alpha_{i} \frac{\partial C_{i}}{\partial t} dV - \oint \limits_{S} \beta_{i} \vec{\nabla}C_{i} \; \vec{dS} = 0,
+\end{eqnarray}
+where
+\begin{eqnarray}
+\begin{gathered}
+\label{eq:alpha}
+\alpha_{i}  =  1+\frac{1 - \phi}{\phi}C_{si}', \: \beta_{i}  = D_{i}.
+\end{gathered}
 \end{eqnarray}
 
  \subsection*{Single-phase two component (Fick and Langmuir)}
@@ -169,31 +175,16 @@ And by applying the divergence theorem
  \end{eqnarray}
  where $i$ - index of  a particular component, $C_{i}$~--~total free gas concentration, $\phi$~--~is total porosity, $C_{si}$~--~adsorbed concentration, $D_{fi}$~--~effective molecular pore diffusion coefficient, $D_{si}$~--~surface molecular diffusion coefficient.
  
- Knowing that
- \begin{eqnarray}
- \label{eq:variable_replace}
- \frac{\partial C_{si}}{\partial t} =  \frac{dC_{si}}{dC_{i}}\frac{\partial C_{i}}{\partial t} = C'_{si}\frac{\partial C_{i}}{\partial t},
- \end{eqnarray}
+ Using Eqs. (\ref{eq:variable_replace_timeder}, \ref{eq:conc_sorption} and \ref{eq:conc_sorption_deriv}) and by knowing that
  
   \begin{eqnarray}
  \label{eq:variable_replace}
 \vec\nabla C_{si} =  \frac{dC_{si}}{dC_{i}}\vec\nabla C_{i} = C'_{si}\vec\nabla C_{i},
  \end{eqnarray}
- 
-  \begin{eqnarray}
- \label{eq:conc_sorption}
- C_{si} =  \frac{C_{s} b_{i}' C_{i}}{1+b_{1}'C_{1}+b_{2}'C_{2}},
- \end{eqnarray}
- 
-  \begin{eqnarray}
- \label{eq:conc_sorption_deriv}
- C_{si}' =  \frac{C_{s}b_{i}' \left(1+b_{1}'C_{1}+b_{2}'C_{2}\right) \pm C_{s}b_{i}'C_{i} \left(b_{1}'-b_{2}'\right)}{\left(1+b_{1}'C_{1}+b_{2}'C_{2}\right)^2},
- \end{eqnarray}
- 
- And by applying the divergence theorem 
+and by applying the divergence theorem, the following equation can be obtained
   \begin{eqnarray}
  \label{eq:diffusuin_multicomp_integral}
- \int \limits_{V} \alpha \frac{\partial C_{i}}{\partial t} d V - \oint \limits_{S} \beta_{i} \vec{\nabla}C_{i} \; \vec{dS} = 0,
+ \int \limits_{V} \alpha_{i} \frac{\partial C_{i}}{\partial t} d V - \oint \limits_{S} \beta_{i} \vec{\nabla}C_{i} \; \vec{dS} = 0,
  \end{eqnarray}
 where  
  \begin{eqnarray}
