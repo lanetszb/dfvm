@@ -154,13 +154,13 @@ C_{si}' =  \frac{C_{s}b_{i}' \left(1+b_{j}'\left(C_{i}+C_{j}\right)\right)}{\lef
 and by applying the divergence theorem, the following equation can be obtained
 \begin{eqnarray}
 \label{eq:diffusuin_multicomp_integral}
-\int \limits_{V} \alpha_{i} \frac{\partial C_{i}}{\partial t} dV - \oint \limits_{S} \beta_{i} \vec{\nabla}C_{i} \; \vec{dS} = 0,
+\int \limits_{V} a_{i} \frac{\partial C_{i}}{\partial t} dV - \oint \limits_{S} b_{i} \vec{\nabla}C_{i} \; \vec{dS} = 0,
 \end{eqnarray}
 where
 \begin{eqnarray}
 \begin{gathered}
 \label{eq:alpha}
-\alpha_{i}  =  1+\frac{1 - \phi}{\phi}C_{si}', \: \beta_{i}  = D_{i}.
+a_{i}  =  1+\frac{1 - \phi}{\phi}C_{si}', \: b_{i}  = D_{i}.
 \end{gathered}
 \end{eqnarray}
 
@@ -184,14 +184,14 @@ where
 and by applying the divergence theorem, the following equation can be obtained
   \begin{eqnarray}
  \label{eq:diffusuin_multicomp_integral}
- \int \limits_{V} \alpha_{i} \frac{\partial C_{i}}{\partial t} d V - \oint \limits_{S} \beta_{i} \vec{\nabla}C_{i} \; \vec{dS} = 0,
+ \int \limits_{V} a_{i} \frac{\partial C_{i}}{\partial t} d V - \oint \limits_{S} b_{i} \vec{\nabla}C_{i} \; \vec{dS} = 0,
  \end{eqnarray}
 where  
  \begin{eqnarray}
  \begin{gathered}
  \label{eq:alpha}
- \alpha_{i}  =  \phi + \left(1-\phi \right)C_{si}', \\ 
- \beta_{i}  = \phi D_{fi} + \left(1-\phi \right) C_{si}'D_{fi}.
+ a_{i}  =  \phi + \left(1-\phi \right)C_{si}', \\ 
+ b_{i}  = \phi D_{fi} + \left(1-\phi \right) C_{si}'D_{si}.
  \end{gathered}
  \end{eqnarray}
 
