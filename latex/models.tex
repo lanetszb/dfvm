@@ -116,7 +116,7 @@ where $\Delta V$~--~volume of a particular grid-block, $\Delta t$~--~numerical t
 
 The parameters $\Delta^{t}$ and $\Delta^{m}$ described by Eq. (\ref{eq:general_diffusivity_num}) are expressed as follows:
     \begin{eqnarray}
-    \label{eq:delta_num}
+    \label{eq:general_delta_num}
     \Delta_t = C^{n+1} - C^{n}, \Delta_x = \begin{cases}
     C_{+}^{n+\mathit1} - C_{-}^{n+\mathit1} : &\text{implicit},\\
         C_{+}^{n} - C_{-}^{n} : &\text{explicit},
@@ -140,7 +140,7 @@ Gas-coalbed system consists of the following mass balances for one of the compon
 \end{gathered}
 \end{eqnarray}
 
-where $i$ - index of  a particular component, $C_{fi}$~--~total free gas concentration, $\phi$~--~is total porosity (matrix and fractures), $C_{si}$~--~adsorbed concentration, $D_{fi}$~--~effective molecular pore diffusion coefficient, $D_{si}$~--~surface molecular diffusion coefficient, $J=J\left(C_{fi}, C_{fj}, C_{si} \right)$~--~source term calculated using the Langmuir equation (\ref{eq:conc_sorption}).
+where $i$ - index of  a particular component, $C_{fi}$~--~total free gas concentration, $\phi$~--~is total porosity (matrix and fractures), $C_{si}$~--~adsorbed concentration, $D_{fi}$~--~effective molecular pore diffusion coefficient, $D_{si}$~--~surface molecular diffusion coefficient, $J=J\left(C_{fi}, C_{fj}, C_{si} \right)$~--~source term calculated using the Langmuir equation (\ref{eq:langm_only_adsorbed_conc}).
 
 \begin{eqnarray}
 \begin{gathered}
@@ -177,19 +177,19 @@ a_{i} = \left(1-\phi\right), \; b_{i} = \left(1-\phi\right) D_{si}: &\text{adsor
 
 
 
- \subsection*{Single-phase two component (Langmuir only)}
+ \subsection*{Single-phase two-component (Langmuir only)}
 Gas-coalbed system consists of the following mass balances for any component in the micro- and macropores:
 
 \begin{eqnarray}
 \begin{gathered}
-\label{eq:diffusuin_multicomp_diff}
+\label{eq:langm_only_free_diffusivity_differential}
 \frac{\partial C_{fi}}{\partial t} - \vec{\nabla} D_{fi} \vec{\nabla}C_{fi} = J,
 \end{gathered}
 \end{eqnarray}
 
 \begin{eqnarray}
 \begin{gathered}
-\label{eq:diffusuin_multicomp_diff}
+\label{eq:langm_only_adsorbed_diffusivity_differential}
 \frac{\partial C_{fi}}{\partial t} - \vec{\nabla} D_{fi} \vec{\nabla}C_{fi} = - \frac{1 - \phi}{\phi} \frac{\partial C_{si}}{\partial t},
 \end{gathered}
 \end{eqnarray}
@@ -197,58 +197,58 @@ where $i$ - index of  a particular component, $C_{fi}$~--~total free gas concent
 
 Knowing that
 \begin{eqnarray}
-\label{eq:variable_replace_timeder}
+\label{eq:langm_only_chain_rule_timeder}
 \frac{\partial C_{si}}{\partial t} =  \frac{dC_{si}}{dC_{fi}}\frac{\partial C_{fi}}{\partial t} = C'_{si}\frac{\partial C_{fi}}{\partial t},
 \end{eqnarray}
 
 \begin{eqnarray}
-\label{eq:conc_sorption}
+\label{eq:langm_only_adsorbed_conc}
 C_{si} =  \frac{C_{s} b_{i}' C_{fi}}{1+b_{i}'C_{fi}+b_{j}'C_{fj}},
 \end{eqnarray}
 
 \begin{eqnarray}
-\label{eq:conc_sorption_deriv}
+\label{eq:langm_only_adsorbed_conc_deriv}
 C_{si}' =  \frac{C_{s}b_{i}' \left(1+b_{j}'\left(C_{fi}+C_{fj}\right)\right)}{\left(1+b_{i}'C_{fi}+b_{j}'C_{fj}\right)^2},
 \end{eqnarray}
 and by applying the divergence theorem, the following equation can be obtained
 \begin{eqnarray}
-\label{eq:diffusuin_multicomp_integral}
+\label{eq:langm_only_diffusivity_simplified_integral}
 \int \limits_{V} a_{i} \frac{\partial C_{fi}}{\partial t} dV - \oint \limits_{S} b_{i} \vec{\nabla}C_{fi} \; \vec{dS} = 0,
 \end{eqnarray}
 where
 \begin{eqnarray}
 \begin{gathered}
-\label{eq:alpha}
+\label{eq:langm_only_diffusivity_a_b_coeffs}
 a_{i}  =  1+\frac{1 - \phi}{\phi}C_{si}', \: b_{i}  = D_{i}.
 \end{gathered}
 \end{eqnarray}
 
- \subsection*{Single-phase two component (Langmuir \& Fick)}
+ \subsection*{Single-phase two-component (Langmuir \& Fick)}
  Gas-coalbed system consists of the following mass balances for any component in the micro- and macropores:
  
  \begin{eqnarray}
  \begin{gathered}
- \label{eq:diffusuin_multicomp_diff}
+ \label{eq:langm_fick_diffusivity_differential}
   \phi\frac{\partial C_{fi}}{\partial t} + \left(1-\phi\right)\frac{\partial C_{si}}{\partial t} - \vec{\nabla} \phi D_{fi} \vec{\nabla}C_{fi} - \vec{\nabla}\left(1-\phi \right) D_{si} \vec{\nabla}C_{si} = 0,
    \end{gathered}
  \end{eqnarray}
  where $i$ - index of  a particular component, $C_{fi}$~--~total free gas concentration, $\phi$~--~is total porosity, $C_{si}$~--~adsorbed concentration, $D_{fi}$~--~effective molecular pore diffusion coefficient, $D_{si}$~--~surface molecular diffusion coefficient.
  
- Using Eqs. (\ref{eq:variable_replace_timeder}, \ref{eq:conc_sorption} and \ref{eq:conc_sorption_deriv}) and by knowing that
+ Using Eqs. (\ref{eq:langm_only_chain_rule_timeder}), (\ref{eq:langm_only_adsorbed_conc}) and (\ref{eq:langm_only_adsorbed_conc_deriv}) and by knowing that
  
   \begin{eqnarray}
- \label{eq:variable_replace}
+ \label{eq:langm_fick_chain_rule_spaceder}
 \vec\nabla C_{si} =  \frac{dC_{si}}{dC_{fi}}\vec\nabla C_{fi} = C'_{si}\vec\nabla C_{fi},
  \end{eqnarray}
-and by applying the divergence theorem, the following equation can be obtained
+we can apply the divergence theorem and obtain the following equation:
   \begin{eqnarray}
- \label{eq:diffusuin_multicomp_integral}
+ \label{eq:langm_fick_diffusivity_simplified_integral}
  \int \limits_{V} a_{i} \frac{\partial C_{fi}}{\partial t} d V - \oint \limits_{S} b_{i} \vec{\nabla}C_{fi} \; \vec{dS} = 0,
  \end{eqnarray}
 where  
  \begin{eqnarray}
  \begin{gathered}
- \label{eq:alpha}
+ \label{eq:langm_fick_diffusivity_a_b_coeffs}
  a_{i}  =  \phi + \left(1-\phi \right)C_{si}', \\ 
  b_{i}  = \phi D_{fi} + \left(1-\phi \right) C_{si}'D_{si}.
  \end{gathered}
