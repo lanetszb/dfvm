@@ -75,47 +75,46 @@
 The employed model of diffusion is derived by substituting the first Fick's law into the continuity equation. In integral form, this model can be represented as follows:
 
     \begin{eqnarray}
-        \label{eq:conductivity_integral}
+        \label{eq:general_diffusivity_integral}
         \int \limits_{V} a \frac{\partial C}{\partial t} d V - \oint \limits_{S} b \vec{\nabla}C \; \vec{dS} = \int \limits_{V} JdV,
     \end{eqnarray}
     where $C = C\left(\vec{x}, t\right)$~--~concentration, $\vec{x}$ ~--~radius vectors, $a = a\left(C\right)$ and can be treated as porosity, $t$~--~time, $V$~--~volume, $b = b\left(C\right)$ and can be treated as a product of porosity and diffusivity, $S$~--~surface area, $J=J\left(C\right)$~--~source term.
     
-Equation (\ref{eq:conductivity_integral}) describes the diffusive flow in general. The relevant boundary and initial conditions should be chosen in order to specialize this equation for the research purposes. Thus, the following boundary conditions have been applied:
+Equation (\ref{eq:general_diffusivity_integral}) describes the diffusive flow in general. The relevant boundary and initial conditions should be chosen in order to specialize this equation for the research purposes. Thus, the following boundary conditions have been applied:
     
     \begin{eqnarray}
-        \label{eq:conductivity_init}
+        \label{eq:general_diffusivity_init}
         C\left(\vec{x}, \mathit{0}\right) = \hat{C}\left(\vec{x}\right), \; 
      \end{eqnarray}
     \begin{eqnarray}
-      \label{eq:conductivity_bound}
+      \label{eq:general_diffusivity_bound}
        C\left(\vec{x}, t\right)\Big|_{\mathit{\Gamma}_D} \!\!= \tilde{C}\left(\vec{x}, t\right), \; b \vec{\nabla}C \left(\vec{x}, t\right)\Big|_{\mathit{\Gamma}_N} \!\!= \vec{G}\left(\vec{x}, t\right),
     \end{eqnarray}
 where $\mathit{\Gamma} = \mathit{\Gamma_D} + \mathit{\Gamma_N}$ is the boundary region.
 
-The finite-volume representation of Eqs. (\ref{eq:conductivity_integral}), (\ref{eq:conductivity_init}), and (\ref{eq:conductivity_bound}) can be described as follows:
+The finite-volume representation of Eqs. (\ref{eq:general_diffusivity_integral}), (\ref{eq:general_diffusivity_init}), and (\ref{eq:general_diffusivity_bound}) can be described as follows:
     \begin{eqnarray}
-        \label{eq:conductivity_num}
+        \label{eq:general_diffusivity_num}
         \alpha^n \Delta_{t} - \sum_{\Delta S} \beta^n\Delta_{x} = \gamma^n,
     \end{eqnarray}
     \begin{eqnarray}
-         \label{eq:eq:conductivity_init_num}
+         \label{eq:general_diffusivity_num_init}
         C = \hat{C}, \; 
     \end{eqnarray}
     \begin{eqnarray}
-    \label{eq:eq:conductivity_bound_num}
-      \label{eq:conductivity_bound_num}
+    \label{eq:general_diffusivity_num_bound}
     C \Big|_{\mathit{\Gamma}_D}= \tilde{C}, \; \beta^n\Delta_x \Big|_{\mathit{\Gamma}_N} = G\Delta S,
     \end{eqnarray}
 
 Parameters $\alpha$ and $\beta$ are expressed as follows:
     \begin{eqnarray}
-        \label{eq:alpha_beta}
+        \label{eq:general_alpha_beta_gamma}
         \alpha^n = a^n\frac{\Delta V}{\Delta t}, \;
         \beta^n = \overline{b}^n\frac{\Delta S}{\Delta L}, \; \gamma^n = J^n \Delta V,
     \end{eqnarray}
 where $\Delta V$~--~volume of a particular grid-block, $\Delta t$~--~numerical time step, $a^n = a\left(C^n\right)$, $b^n = b\left(C^n\right)$, $\overline{b}$~--~average $b$, $J^n=J\left(C^n\right)$, $\Delta L$~--~distance between centres of two neighbouring grid-blocks whit respect to a particular surface, $\Delta S$~--~surface bounding a grid-block (positive or negative sign is defined by the normal direction).
 
-The parameters $\Delta^{t}$ and $\Delta^{m}$ described by Eq. (\ref{eq:conductivity_num}) are expressed as follows:
+The parameters $\Delta^{t}$ and $\Delta^{m}$ described by Eq. (\ref{eq:general_diffusivity_num}) are expressed as follows:
     \begin{eqnarray}
     \label{eq:delta_num}
     \Delta_t = C^{n+1} - C^{n}, \Delta_x = \begin{cases}
@@ -125,37 +124,58 @@ The parameters $\Delta^{t}$ and $\Delta^{m}$ described by Eq. (\ref{eq:conductiv
     \end{eqnarray}
 where subscript signs $+$ and $-$ indicate the position of the finite-volume block relative to the normal direction of the current surface element $\Delta S$.
 
-\subsection*{Two-phase two-component (Langmuir and Fick)}
-
+\subsection*{Two-phase two-component (Langmuir \& Fick)}
+Gas-coalbed system consists of the following mass balances for one of the components in the micro- and macropores:
 \begin{eqnarray}
 \begin{gathered}
-\label{eq:diffusuin_multicomp_proper_free}
+\label{eq:multiphase_free_diffusivity_differential}
 \phi \frac{\partial C_{fi}}{\partial t}  - \vec{\nabla} \phi D_{fi} \vec{\nabla}C_{fi} = J,
 \end{gathered}
 \end{eqnarray}
 
 \begin{eqnarray}
 \begin{gathered}
-\label{eq:diffusuin_multicomp_proper_surface}
+\label{eq:multiphase_adsorbed_diffusivity_differential}
 \left(1-\phi\right) \frac{\partial C_{si}}{\partial t}  - \vec{\nabla} \left(1-\phi\right) D_{si} \vec{\nabla}C_{si} = -J,
 \end{gathered}
 \end{eqnarray}
 
-where $i$ - index of  a particular component, $C_{fi}$~--~total free gas concentration, $\phi$~--~is total porosity, $C_{si}$~--~adsorbed concentration, $D_{fi}$~--~effective molecular pore diffusion coefficient, $D_{si}$~--~surface molecular diffusion coefficient, $J=J\left(C_{fi}, C_{fj}, C_{si} \right)$~--~source term calculated using the Langmuir equation (Eq. \ref{eq:conc_sorption}).
+where $i$ - index of  a particular component, $C_{fi}$~--~total free gas concentration, $\phi$~--~is total porosity (matrix and fractures), $C_{si}$~--~adsorbed concentration, $D_{fi}$~--~effective molecular pore diffusion coefficient, $D_{si}$~--~surface molecular diffusion coefficient, $J=J\left(C_{fi}, C_{fj}, C_{si} \right)$~--~source term calculated using the Langmuir equation (\ref{eq:conc_sorption}).
 
 \begin{eqnarray}
 \begin{gathered}
-\label{eq:diffusuin_multicomp_proper_free}
+\label{eq:multiphase_free_diffusivity_integral}
 \int \limits_{V} \phi \frac{\partial C_{fi}}{\partial t} dV  - \oint \limits_{S} \phi D_{fi} \vec{\nabla}C_{fi} \; \vec{dS} = \int \limits_{V} J dV,
 \end{gathered}
 \end{eqnarray}
 
 \begin{eqnarray}
 \begin{gathered}
-\label{eq:diffusuin_multicomp_proper_surface}
+\label{eq:multiphase_adsorbed_diffusivity_integral}
 \int \limits_{V} \left(1-\phi\right) \frac{\partial C_{si}}{\partial t} dV - \oint \limits_{S} \left(1-\phi\right) D_{si} \vec{\nabla}C_{si} \; \vec{dS} = -\int \limits_{V}JdV,
 \end{gathered}
 \end{eqnarray}
+
+both Eqs. (\ref{eq:multiphase_free_diffusivity_integral}) and (\ref{eq:multiphase_adsorbed_diffusivity_integral}) can be presented in the following form:
+
+\begin{eqnarray}
+\label{eq:multiphase_diffusivity_simplified_integral}
+\int \limits_{V} a_{i} \frac{\partial C_{fi}}{\partial t} dV - \oint \limits_{S} b_{i} \vec{\nabla}C_{fi} \; \vec{dS} = 0,
+\end{eqnarray}
+
+where 
+
+\begin{eqnarray}
+\label{eq:multiphase_diffusivity_a_b_coeffs}
+\begin{gathered}
+\begin{cases}
+a_{i} = \phi, \; b_{i} = \phi D_{fi}: &\text{free state},\\
+a_{i} = \left(1-\phi\right), \; b_{i} = \left(1-\phi\right) D_{si}: &\text{adsorbed state}.
+\end{cases}
+\end{gathered}
+\end{eqnarray}
+
+
 
  \subsection*{Single-phase two component (Langmuir only)}
 Gas-coalbed system consists of the following mass balances for any component in the micro- and macropores:
@@ -203,7 +223,7 @@ a_{i}  =  1+\frac{1 - \phi}{\phi}C_{si}', \: b_{i}  = D_{i}.
 \end{gathered}
 \end{eqnarray}
 
- \subsection*{Single-phase two component (Langmuir and Fick)}
+ \subsection*{Single-phase two component (Langmuir \& Fick)}
  Gas-coalbed system consists of the following mass balances for any component in the micro- and macropores:
  
  \begin{eqnarray}
