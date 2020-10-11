@@ -129,53 +129,85 @@ Gas-coalbed system consists of the following mass balances for one of the compon
 \begin{eqnarray}
 \begin{gathered}
 \label{eq:multiphase_free_diffusivity_differential}
-\phi \frac{\partial C_{fi}}{\partial t}  - \vec{\nabla} \phi D_{fi} \vec{\nabla}C_{fi} = J,
+\phi \frac{\partial C_{fi}}{\partial t}  - \vec{\nabla} \phi D_{fi} \vec{\nabla}C_{fi} = J_i,
 \end{gathered}
 \end{eqnarray}
 
 \begin{eqnarray}
 \begin{gathered}
 \label{eq:multiphase_adsorbed_diffusivity_differential}
-\left(1-\phi\right) \frac{\partial C_{si}}{\partial t}  - \vec{\nabla} \left(1-\phi\right) D_{si} \vec{\nabla}C_{si} = -J,
+\left(1-\phi\right) \frac{\partial C_{si}}{\partial t}  - \vec{\nabla} \left(1-\phi\right) D_{si} \vec{\nabla}C_{si} = -J_i,
 \end{gathered}
 \end{eqnarray}
 
-where $i$ - index of  a particular component, $C_{fi}$~--~total free gas concentration, $\phi$~--~is total porosity (matrix and fractures), $C_{si}$~--~adsorbed concentration, $D_{fi}$~--~effective molecular pore diffusion coefficient, $D_{si}$~--~surface molecular diffusion coefficient, $J=J\left(C_{fi}, C_{fj}, C_{si} \right)$~--~source term calculated using the Langmuir equation (\ref{eq:langm_only_adsorbed_conc}).
+where $i$ - index of  a particular component, $C_{f}$~--~total free gas concentration, $\phi$~--~is total porosity (matrix and fractures), $C_{s}$~--~adsorbed concentration, $D_{f}$~--~effective molecular pore diffusion coefficient, $D_{s}$~--~surface molecular diffusion coefficient, $J=J\left(C_{fi}, C_{fj}, C_{si} \right)$~--~source term calculated using the Langmuir equation (\ref{eq:langm_only_adsorbed_conc}).
 
 \begin{eqnarray}
 \begin{gathered}
 \label{eq:multiphase_free_diffusivity_integral}
-\int \limits_{V} \phi \frac{\partial C_{fi}}{\partial t} dV  - \oint \limits_{S} \phi D_{fi} \vec{\nabla}C_{fi} \; \vec{dS} = \int \limits_{V} J dV,
+\int \limits_{V} \phi \frac{\partial C_{fi}}{\partial t} dV  - \oint \limits_{S} \phi D_{fi} \vec{\nabla}C_{fi} \; \vec{dS} = \int \limits_{V} J_i \; dV,
 \end{gathered}
 \end{eqnarray}
 
 \begin{eqnarray}
 \begin{gathered}
 \label{eq:multiphase_adsorbed_diffusivity_integral}
-\int \limits_{V} \left(1-\phi\right) \frac{\partial C_{si}}{\partial t} dV - \oint \limits_{S} \left(1-\phi\right) D_{si} \vec{\nabla}C_{si} \; \vec{dS} = -\int \limits_{V}JdV,
+\int \limits_{V} \left(1-\phi\right) \frac{\partial C_{si}}{\partial t} dV - \oint \limits_{S} \left(1-\phi\right) D_{si} \vec{\nabla}C_{si} \; \vec{dS} = -\int \limits_{V}J_i \; dV,
 \end{gathered}
 \end{eqnarray}
 
-both Eqs. (\ref{eq:multiphase_free_diffusivity_integral}) and (\ref{eq:multiphase_adsorbed_diffusivity_integral}) can be presented in the following form:
+both Eqs. (\ref{eq:multiphase_free_diffusivity_integral}) and (\ref{eq:multiphase_adsorbed_diffusivity_integral}) can be presented in the following forms:
 
 \begin{eqnarray}
 \label{eq:multiphase_diffusivity_simplified_integral}
-\int \limits_{V} a_{i} \frac{\partial C_{fi}}{\partial t} dV - \oint \limits_{S} b_{i} \vec{\nabla}C_{fi} \; \vec{dS} = 0,
+\int \limits_{V} a_{f} \frac{\partial C_{fi}}{\partial t} dV - \oint \limits_{S} b_{fi} \vec{\nabla}C_{fi} \; \vec{dS} = \int \limits_{V} J_{i} \; dV,
+\end{eqnarray}
+\begin{eqnarray}
+\label{eq:multiphase_diffusivity_simplified_integral}
+\int \limits_{V} a_{s} \frac{\partial C_{si}}{\partial t} dV - \oint \limits_{S} b_{si} \vec{\nabla}C_{si} \; \vec{dS} = -\int \limits_{V} J_{i} \; dV,
 \end{eqnarray}
 
+\begin{eqnarray}
+\label{eq:multiphase_diffusivity_densities}
+b_{fi}, b_{fj}, J_{i}, J_{j} \mid \frac{C_{fi}}{\rho_i} + \frac{C_{fj}}{\rho_j} = 1,
+\end{eqnarray}
 where 
 
 \begin{eqnarray}
-\label{eq:multiphase_diffusivity_a_b_coeffs}
+\label{eq:multiphase_diffusivity_a_b_coeffs_free}
 \begin{gathered}
-\begin{cases}
-a_{i} = \phi, \; b_{i} = \phi D_{fi}: &\text{free state},\\
-a_{i} = \left(1-\phi\right), \; b_{i} = \left(1-\phi\right) D_{si}: &\text{adsorbed state}.
-\end{cases}
+a_{f} = \phi, \; b_{fi} = \phi D_{fi},
+\end{gathered}
+\end{eqnarray}
+\begin{eqnarray}
+\label{eq:multiphase_diffusivity_a_b_coeffs_adsorbed}
+\begin{gathered}
+a_{s} = \left(1-\phi\right), \; b_{si} = \left(1-\phi\right) D_{si}.
 \end{gathered}
 \end{eqnarray}
 
+\begin{eqnarray}
+\label{eq:multiphase_diffusivity_simplified_integral}
+\int \limits_{V} a_{f} \frac{\partial C_{fj}}{\partial t} dV - \oint \limits_{S} b_{fj} \vec{\nabla}C_{fj} \; \vec{dS} = \int \limits_{V} J_{j} \; dV,
+\end{eqnarray}
+\begin{eqnarray}
+\label{eq:multiphase_diffusivity_simplified_integral}
+\int \limits_{V} a_{f} \frac{\partial C_{fj}}{\partial t} dV - \oint \limits_{S} b_{fi} \vec{\nabla}C_{fj} \; \vec{dS} = -\int \limits_{V} \frac{\rho_j}{\rho_i}J_{i} \; dV,
+\end{eqnarray}
 
+\begin{eqnarray}
+\label{eq:multiphase_diffusivity_simplified_integral}
+\oint \limits_{S} b_{fj} \vec{\nabla}C_{fj} \vec{dS}
+ + \int \limits_{V} J_{j} \; dV
+ = \oint \limits_{S} b_{fi} \vec{\nabla}C_{fj} \vec{dS}
+ -\int \limits_{V} \frac{\rho_j}{\rho_i}J_{i} \; dV,
+\end{eqnarray}
+
+\begin{eqnarray}
+\label{eq:multiphase_diffusivity_simplified_integral}
+\oint \limits_{S} \left(b_{fj}-b_{fi}\right) \vec{\nabla}C_{fj} \vec{dS}
+= -\int \limits_{V} \left(J_{j}+\frac{\rho_j}{\rho_i}J_{i}\right) \; dV.
+\end{eqnarray}
 
  \subsection*{Single-phase two-component (Langmuir only)}
 Gas-coalbed system consists of the following mass balances for any component in the micro- and macropores:
@@ -208,13 +240,18 @@ C_{si} =  \frac{C_{s} b_{i}' C_{fi}}{1+b_{i}'C_{fi}+b_{j}'C_{fj}},
 
 \begin{eqnarray}
 \label{eq:langm_only_adsorbed_conc_deriv}
-C_{si}' =  \frac{C_{s}b_{i}' \left(1+b_{j}'\left(C_{fi}+C_{fj}\right)\right)}{\left(1+b_{i}'C_{fi}+b_{j}'C_{fj}\right)^2},
+C_{si}' =  \frac{C_{s}b_{i}' \left(1+b_{j}'\rho_{j}\right)}{\left(1+b_{i}'C_{fi}+b_{j}'C_{fj}\right)^2},
 \end{eqnarray}
 and by applying the divergence theorem, the following equation can be obtained
 \begin{eqnarray}
 \label{eq:langm_only_diffusivity_simplified_integral}
 \int \limits_{V} a_{i} \frac{\partial C_{fi}}{\partial t} dV - \oint \limits_{S} b_{i} \vec{\nabla}C_{fi} \; \vec{dS} = 0,
 \end{eqnarray}
+\begin{eqnarray}
+\label{eq:langm_only_diffusivity_densities}
+a_{i}, a_{j}, b_{i}, b_{j} \mid \frac{C_{fi}}{\rho_i} + \frac{C_{fj}}{\rho_j} = 1,
+\end{eqnarray} 
+
 where
 \begin{eqnarray}
 \begin{gathered}
