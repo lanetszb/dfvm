@@ -22,6 +22,7 @@
  */
 
 #include "Convective.h"
+#include "funcs.cpp"
 #include <algorithm>
 #include <iterator>
 
@@ -31,22 +32,16 @@ Convective::Convective(std::shared_ptr<Props> props,
         _sgrid(sgrid),
         _betas(_sgrid->_facesN) {}
 
-double Convective::weighD(const std::string &method, const double &conc0,
-                          const double &conc1) {
+double Convective::weighConc(const std::string &method, const double &conc0,
+                             const double &conc1) {
 
-    if (method == "meanAverage") {
-        auto conc = (conc0 + conc1) / 2;
-        return _props->calcD(conc);
-
-    } else if (method == "meanHarmonic") {
-        auto conc = 2. * conc0 * conc1 / (conc0 + conc1);
-        return _props->calcD(conc);
-
-    } else if (method == "upWind") {
-        auto conc = std::max(conc0, conc1);
-        return _props->calcD(conc);
-
-    } else exit(0);
+    if (method == "meanAverage")
+        return (conc0 + conc1) / 2;
+    else if (method == "meanHarmonic")
+        return 2. * conc0 * conc1 / (conc0 + conc1);
+    else if (method == "upWind")
+        return std::max(conc0, conc1);
+    else exit(0);
 }
 
 void Convective::calcBetas(Eigen::Ref<Eigen::VectorXd> concs, double &time) {
@@ -55,23 +50,32 @@ void Convective::calcBetas(Eigen::Ref<Eigen::VectorXd> concs, double &time) {
 
     auto &neighborsCells = _sgrid->_neighborsCells;
 
+
     for (int i = 0; i < _betas.size(); i++) {
         auto &neighborsCell = neighborsCells[i];
         auto &conc0 = concs(neighborsCell[0]);
         auto &conc1 = concs(neighborsCell[1]);
 
         double diffusivity;
+        double bCoeff;
+
         if (neighborsCells[i].size() == 2) {
-            diffusivity = weighD("meanAverage", conc0, conc1);
-        }
-        else {
-            diffusivity = weighD("meanAverage", conc0, conc0);
+            auto conc = weighConc("meanAverage", conc0, conc1);
+            // ToDo: remove castyl for poro
+            bCoeff = calcBFunc(conc, 1.);
+            diffusivity = _props->calcD(conc);
+        } else {
+            auto conc = weighConc("meanAverage", conc0, conc0);
+            bCoeff = calcBFunc(conc, 1.);
+            diffusivity = _props->calcD(conc);
         }
 
         auto &axis = _sgrid->_facesAxes[i];
-        _betas[i] =
-                diffusivity * _sgrid->_facesSs[axis] / _sgrid->_spacing[axis];
+
+        _betas[i] = diffusivity * bCoeff * _sgrid->_facesSs[axis]
+                    / _sgrid->_spacing[axis];
 
     }
+    std::cout << std::endl;
     time += (double) (clock() - tStart);
 }

@@ -16,7 +16,8 @@ add_dependencies(sgrid sgrid)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../)
 
-set(SOURCE_CODE math/Props.cpp math/Local.cpp math/Convective.cpp Equation.cpp)
+set(SOURCE_CODE math/Props.cpp math/Local.cpp math/Convective.cpp Equation.cpp
+        math/funcs.cpp)
 
 add_library(${PROJECT_NAME} ${SOURCE_CODE})
 
