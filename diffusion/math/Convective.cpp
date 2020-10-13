@@ -56,23 +56,24 @@ void Convective::calcBetas(Eigen::Ref<Eigen::VectorXd> concs, double &time) {
         auto &conc0 = concs(neighborsCell[0]);
         auto &conc1 = concs(neighborsCell[1]);
 
+        auto poro = std::get<double>(_props->_params["poro"]);
+
         double diffusivity;
         double bCoeff;
 
         if (neighborsCells[i].size() == 2) {
             auto conc = weighConc("meanAverage", conc0, conc1);
-            // ToDo: remove castyl for poro
-            bCoeff = calcBFunc(conc, 1.);
             diffusivity = _props->calcD(conc);
+            bCoeff = calcBFunc(conc, diffusivity, poro);
         } else {
             auto conc = weighConc("meanAverage", conc0, conc0);
-            bCoeff = calcBFunc(conc, 1.);
             diffusivity = _props->calcD(conc);
+            bCoeff = calcBFunc(conc, diffusivity, poro);
         }
 
         auto &axis = _sgrid->_facesAxes[i];
 
-        _betas[i] = diffusivity * bCoeff * _sgrid->_facesSs[axis]
+        _betas[i] = bCoeff * _sgrid->_facesSs[axis]
                     / _sgrid->_spacing[axis];
 
     }

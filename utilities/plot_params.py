@@ -2,20 +2,15 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def plot_x_y(x_values, y_values, x_name, y_name, graph_name, line_type,
+def plot_x_y(ax, x_values, y_values, x_name, y_name, line_type,
              **kwargs):
-    plt.ticklabel_format(style='sci', axis='x', scilimits=(0, 0))
+    ax.ticklabel_format(style='sci', axis='x', scilimits=(0, 0))
 
-    plt.suptitle(graph_name)
+    ax.set_xlabel(x_name)
+    ax.set_ylabel(y_name)
 
-    plt.xlabel(x_name)
-    plt.ylabel(y_name)
+    ax.ticklabel_format(axis="x", style="plain")
+    ax.plot(x_values, y_values, line_type, **kwargs)
 
-    plt.ticklabel_format(axis="x", style="plain")
-    # ax = plt.gca()
-    plt.plot(x_values, y_values, line_type, **kwargs)
-    plt.legend(y_name)
-    plt.show()
-    # ax.yaxis.set_major_locator(plt.LinearLocator(numticks=6))
 
 

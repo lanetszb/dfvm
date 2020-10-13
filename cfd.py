@@ -58,15 +58,16 @@ sgrid.cells_arrays = concs_arrays
 # computation time
 time_period = float(100.)  # sec
 # numerical time step
-time_step = 5.0  # sec
+time_step = float(5.0)  # sec
 
-# diffusion coeffs
-d_coeff_a = 0.0  # m2/sec
-d_coeff_b = 3.E-1  # m2/sec
+# diffusivity coeffs (specify only b coeff to make free diffusion constant)
+d_coeff_a = float(0.0)  # m2/sec
+d_coeff_b = float(3.E-1)  # m2/sec
 # porosity of rock
-porosity = 0.5
+poro = float(1)
 params = {'time_period': time_period, 'time_step': time_step,
-          'd_coeff_a': d_coeff_a, 'd_coeff_b': d_coeff_b}
+          'd_coeff_a': d_coeff_a, 'd_coeff_b': d_coeff_b,
+          'poro': poro}
 #
 props = Props(params)
 local = Local(props, sgrid)
@@ -83,6 +84,7 @@ equation.concs_bound_dirich = {'left': conc_left, 'right': conc_right}
 equation.cfd_procedure()
 
 # visualising 'a' and 'b' coefficients
+# set concentration range for visualisation
 conc_min = 0
 conc_max = 20
 
@@ -91,14 +93,17 @@ b_list = []
 conc_list = []
 for i in range(conc_min, conc_max):
     conc_list.append(i)
-    a_list.append(diffusion_bind.calc_a_func(i, porosity))
-    b_list.append(diffusion_bind.calc_b_func(i, porosity))
+    a_list.append(diffusion_bind.calc_a_func(i, poro))
+    b_list.append(diffusion_bind.calc_b_func(i, d_coeff_b, poro))
 
 # plotting the dependence of 'a' and 'b' coefficients on free concentration
-plot_x_y(conc_list, a_list, 'concentration', 'a coefficient',
-         '', '-')
-plot_x_y(conc_list, b_list, 'concentration', 'b coefficient',
-         '', '-')
+fig, axs = plt.subplots(2, sharex=True)
+plot_x_y(axs[0], conc_list, a_list, 'concentration', 'coeff a', '-',
+         color='green')
+plot_x_y(axs[1], conc_list, b_list, 'concentration', 'coeff b', '-',
+         color='blue')
+axs[0].legend('a', loc="best")
+axs[1].legend('b', loc="best")
 
 # saving results to paraview
 
@@ -109,7 +114,7 @@ file_name = 'inOut/collection.pvd'
 files_names = list()
 files_descriptions = list()
 for i in range(len(local.time_steps)):
-    sgrid.cells_arrays = {'conc': equation.concs_time[i]}
+    sgrid.cells_arrays = {'conc_i': equation.concs_time[i]}
     files_names.append(str(i) + '.vtu')
     files_descriptions.append(str(i))
     sgrid.save('inOut/' + files_names[i])
