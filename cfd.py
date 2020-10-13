@@ -24,9 +24,9 @@
 import sys
 import os
 import numpy as np
-import math
+import matplotlib.pyplot as plt
 
-import json
+from utilities import plot_x_y
 
 current_path = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(current_path, '../'))
@@ -36,6 +36,7 @@ import diffusion_bind
 from diffusion_bind import Props, Local, Convective, Equation
 from sgrid import Sgrid, save_files_collection_to_file
 
+# model geometry
 points_dims = [10, 10, 10]
 points_origin = [0., 0., 0.]
 spacing = [1., 1., 1.]
@@ -44,21 +45,26 @@ sgrid = Sgrid(points_dims, points_origin, spacing)
 points_array = np.random.rand(sgrid.points_N)
 
 points_arrays = {"points_array": points_array}
-# cells_array = np.random.rand(sgrid.cells_N)
-# cells_arrays = {"cells_array ": cells_array}
-# sgrid.cells_arrays = cells_arrays
 
-concs_array1 = np.tile(float(10.0), sgrid.cells_N)
-concs_array2 = np.tile(float(10.0), sgrid.cells_N)
+# initial concentration
+conc_ini = float(10.0)
+concs_array1 = np.tile(conc_ini, sgrid.cells_N)
+concs_array2 = np.tile(conc_ini, sgrid.cells_N)
 concs_arrays = {"concs_array1": concs_array1,
                 "concs_array2": concs_array2}
 
 sgrid.cells_arrays = concs_arrays
+
+# computation time
 time_period = float(100.)  # sec
+# numerical time step
 time_step = 5.0  # sec
+
+# diffusion coeffs
 d_coeff_a = 0.0  # m2/sec
 d_coeff_b = 3.E-1  # m2/sec
-#
+# porosity of rock
+porosity = 0.5
 params = {'time_period': time_period, 'time_step': time_step,
           'd_coeff_a': d_coeff_a, 'd_coeff_b': d_coeff_b}
 #
@@ -67,17 +73,34 @@ local = Local(props, sgrid)
 convective = Convective(props, sgrid)
 
 equation = Equation(props, sgrid, local, convective)
-equation.bound_groups_dirich = ['left', 'right']
-equation.concs_bound_dirich = {'left': float(10), 'right': float(20)}
-equation.cfd_procedure()
-# equation.bound_groups_dirich = ['left', 'right',
-#                                 'top', 'bottom',
-#                                 'front', 'back']
-#
-# equation.concs_bound_dirich = {'left': float(10), 'right': float(20),
-#                                'top': float(30), 'bottom': float(40),
-#                                'front': float(50), 'back': float(60)}
 
+# dirichlet cells (options: left, right, top, bottom, front, back)
+equation.bound_groups_dirich = ['left', 'right']
+# concentration on dirichlet cells
+conc_left = float(10)
+conc_right = float(20)
+equation.concs_bound_dirich = {'left': conc_left, 'right': conc_right}
+equation.cfd_procedure()
+
+# visualising 'a' and 'b' coefficients
+conc_min = 0
+conc_max = 20
+
+a_list = []
+b_list = []
+conc_list = []
+for i in range(conc_min, conc_max):
+    conc_list.append(i)
+    a_list.append(diffusion_bind.calc_a_func(i, porosity))
+    b_list.append(diffusion_bind.calc_b_func(i, porosity))
+
+# plotting the dependence of 'a' and 'b' coefficients on free concentration
+plot_x_y(conc_list, a_list, 'concentration', 'a coefficient',
+         '', '-')
+plot_x_y(conc_list, b_list, 'concentration', 'b coefficient',
+         '', '-')
+
+# saving results to paraview
 
 os.system('rm -r inOut/*.vtu')
 os.system('rm -r inOut/*.pvd')
@@ -92,36 +115,3 @@ for i in range(len(local.time_steps)):
     sgrid.save('inOut/' + files_names[i])
 
 save_files_collection_to_file(file_name, files_names, files_descriptions)
-
-# conc analyt
-# L = 10
-# conc_analyt = []
-# grid_block_n_analyt = 20
-# dX = L / grid_block_n_analyt
-# # #
-# grid_centers_analyt = []
-# for i in range(grid_block_n_analyt):
-#     grid_centers_analyt.append(0 + i * dX + dX / 2)
-#
-# conc_ini = 10.0
-# conc_out = 20.0
-# #
-# D = d_coeff_b
-# t = time_period
-# dt = time_step
-# # #
-# for i in range(grid_block_n_analyt):
-#     conc_it = conc_out + (conc_ini - conc_out) * math.erf(
-#         i * dX / 2 / math.sqrt(D * t))
-#     conc_analyt.append(conc_it)
-# # #
-# conc_analyt.reverse()
-#
-
-# local.calc_time_steps()
-# local.calc_alphas()
-#
-# convective = Convective(props, sgrid)
-# concs = np.ones(sgrid.cells_N)
-# convective.calc_betas(concs)
-# convective.weigh_D("mean_Average")
