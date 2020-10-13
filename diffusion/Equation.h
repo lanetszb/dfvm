@@ -67,8 +67,7 @@ public:
     void processNewmanFaces(const double &flowNewman,
                             Eigen::Map<Eigen::VectorXui64> faces);
 
-    void processDirichCells(const double &alpha,
-                            std::vector<std::string> &boundGroups,
+    void processDirichCells(std::vector<std::string> &boundGroups,
                             std::map<std::string, double> &concsBound,
                             double &time);
 
@@ -80,7 +79,7 @@ public:
 
     void processNonBoundFaces(Eigen::Ref<Eigen::VectorXui64> faces);
 
-    void fillMatrix(const double &alpha, std::map<std::string, double> &times);
+    void fillMatrix(std::map<std::string, double> &times);
 
     void calcConcsIni();
 

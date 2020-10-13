@@ -22,11 +22,13 @@
  */
 
 #include "Local.h"
+#include "funcs.h"
 #include <algorithm>
 
 Local::Local(std::shared_ptr<Props> props, std::shared_ptr<Sgrid> sgrid) :
         _props(props),
-        _sgrid(sgrid) {}
+        _sgrid(sgrid),
+        _alphas(_sgrid->_cellsN, 0) {}
 
 void Local::calcTimeSteps() {
 
@@ -42,8 +44,11 @@ void Local::calcTimeSteps() {
         _timeSteps.push_back(lastStep * timeStep);
 }
 
-void Local::calcAlphas() {
-    _alphas.clear();
-    for (auto &timeStep: _timeSteps)
-        _alphas.push_back(_sgrid->_cellV / timeStep);
+void Local::calcAlphas(Eigen::Ref<Eigen::VectorXd> concs,
+                       const double &timeStep) {
+
+    for (int i = 0; i < _alphas.size(); i++) {
+        auto aCoeff = calcAFunc(concs[i], 1.);
+        _alphas[i] = aCoeff * _sgrid->_cellV / timeStep;
+    }
 }

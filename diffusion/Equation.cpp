@@ -87,8 +87,7 @@ void Equation::processNonBoundFaces(Eigen::Ref<Eigen::VectorXui64> faces) {
 
 }
 
-std::vector<int> Equation::groupVecsByKeys(
-        std::vector<std::string> &groups) {
+std::vector<int> Equation::groupVecsByKeys(std::vector<std::string> &groups) {
 
     std::vector<int> groupedCells;
     for (auto &bound : groups) {
@@ -129,8 +128,7 @@ std::vector<int> Equation::findNonDirichCells(
     return nonDirichCells;
 }
 
-void Equation::fillMatrix(const double &alpha,
-                          std::map<std::string, double> &times) {
+void Equation::fillMatrix(std::map<std::string, double> &times) {
 
     clock_t timeStart = clock();
 
@@ -139,8 +137,8 @@ void Equation::fillMatrix(const double &alpha,
             it.valueRef() = 0;
 
     for (uint64_t i = 0; i < _sgrid->_cellsN; i++) {
-        matrix.coeffRef(i, i) = alpha;
-        freeVector[i] = alpha * _concs[iPrev][i];
+        matrix.coeffRef(i, i) = _local->_alphas[i];
+        freeVector[i] = _local->_alphas[i] * _concs[iPrev][i];
     }
 
     for (auto &nonDirichCell: findNonDirichCells(_boundGroupsDirich)) {
@@ -177,8 +175,7 @@ void Equation::fillMatrix(const double &alpha,
 
 }
 
-void Equation::processDirichCells(const double &alpha,
-                                  std::vector<std::string> &boundGroups,
+void Equation::processDirichCells(std::vector<std::string> &boundGroups,
                                   std::map<std::string, double> &concsBound,
                                   double &time) {
 
@@ -189,7 +186,7 @@ void Equation::processDirichCells(const double &alpha,
         auto cells = _sgrid->_typesCells.at(bound);
         for (int j = 0; j < cells.size(); j++) {
             auto cell = cells[j];
-            freeVector[cell] = conc * alpha;
+            freeVector[cell] = conc * _local->_alphas[cell];
         }
     }
 
@@ -222,7 +219,6 @@ void Equation::cfdProcedure() {
     _concs.emplace_back(_sgrid->_cellsArrays.at("concs_array2"));
 
     _local->calcTimeSteps();
-    _local->calcAlphas();
 
     double calcBetasTime = 0;
     std::map<std::string, double> fillMatrixTimes;
@@ -234,15 +230,16 @@ void Equation::cfdProcedure() {
     double calcConcsImplicitTime = 0;
     double totalTime = 0;
 
-    for (auto &alpha : _local->_alphas) {
+    for (auto &timeStep : _local->_timeSteps) {
         clock_t tStart = clock();
 
         std::swap(iCurr, iPrev);
         _convective->calcBetas(_concs[iPrev], calcBetasTime);
+        _local->calcAlphas(_concs[iPrev], timeStep);
 
         processNonBoundFaces(_sgrid->_typesFaces.at("nonbound"));
-        fillMatrix(alpha, fillMatrixTimes);
-        processDirichCells(alpha, _boundGroupsDirich, _concsBoundDirich,
+        fillMatrix(fillMatrixTimes);
+        processDirichCells(_boundGroupsDirich, _concsBoundDirich,
                            procesDirichCellsTime);
 
         calcConcsImplicit(calcConcsImplicitTime);
@@ -279,8 +276,7 @@ std::vector<Eigen::Ref<Eigen::VectorXd>> Equation::getConcsTime() {
     return Eigen::vectorGetter<Eigen::VectorXd>(_concsTime);
 }
 
-void
-Equation::setConcsTime(
+void Equation::setConcsTime(
         std::vector<Eigen::Ref<Eigen::VectorXd>> &concsTime) {
     Eigen::vectorSetter<Eigen::VectorXd>(concsTime, _concsTime);
 }

@@ -43,7 +43,7 @@ public:
 
     void calcTimeSteps();
 
-    void calcAlphas();
+    void calcAlphas(Eigen::Ref<Eigen::VectorXd> concs, const double &timeStep);
 
     std::shared_ptr<Props> _props;
     std::shared_ptr<Sgrid> _sgrid;

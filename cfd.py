@@ -32,6 +32,7 @@ current_path = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(current_path, '../'))
 print(current_path)
 
+import diffusion_bind
 from diffusion_bind import Props, Local, Convective, Equation
 from sgrid import Sgrid, save_files_collection_to_file
 
@@ -84,7 +85,7 @@ concs_dict = dict()
 file_name = 'inOut/collection.pvd'
 files_names = list()
 files_descriptions = list()
-for i in range(len(local.alphas)):
+for i in range(len(local.time_steps)):
     sgrid.cells_arrays = {'conc': equation.concs_time[i]}
     files_names.append(str(i) + '.vtu')
     files_descriptions.append(str(i))

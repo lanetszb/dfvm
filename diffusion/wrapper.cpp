@@ -29,12 +29,16 @@
 #include "math/Props.h"
 #include "math/Local.h"
 #include "math/Convective.h"
+#include "math/funcs.h"
 #include "Equation.h"
 
 namespace py = pybind11;
 using namespace pybind11::literals;
 
 PYBIND11_MODULE(diffusion_bind, m) {
+
+    m.def("calc_a_func", calcAFunc, "conc"_a, "poro"_a);
+    m.def("calc_b_func", calcBFunc, "conc"_a, "poro"_a);
 
     py::class_<Props, std::shared_ptr<Props>>(m, "Props")
             .def(py::init<const std::map<std::string, std::variant<int, double>> &>(),
@@ -46,30 +50,23 @@ PYBIND11_MODULE(diffusion_bind, m) {
 
     py::class_<Local, std::shared_ptr<Local>>(m, "Local")
             .def(py::init<std::shared_ptr<Props>, std::shared_ptr<Sgrid>>(),
-                 "props"_a,
-                 "sgrid"_a)
+                 "props"_a, "sgrid"_a)
 
             .def("calc_time_steps", &Local::calcTimeSteps)
-            .def("calc_alphas", &Local::calcAlphas)
+            .def("calc_alphas", &Local::calcAlphas,
+                 "concs"_a, "time_step"_a)
             .def_readwrite("time_steps", &Local::_timeSteps)
             .def_readwrite("alphas", &Local::_alphas);
 
 
-
-    // .def_property("time_steps",
-    //               &Local::getTimeSteps, &Local::setTimeSteps)
-    // .def_property("alphas",
-    //               &Local::getAlphas, &Local::setAlphas);
-
-
     py::class_<Convective, std::shared_ptr<Convective>>(m, "Convective")
             .def(py::init<std::shared_ptr<Props>, std::shared_ptr<Sgrid>>(),
-                 "props"_a,
-                 "sgrid"_a)
+                 "props"_a, "sgrid"_a)
 
-            //.def("weigh_D", &Convective::weighD, "method"_a, "conc_first"_a,
-            //     "conc_second"_a)
-            // .def("calc_betas", &Convective::calcBetas, "concs"_a)
+            .def("weigh_conc", &Convective::weighConc, "method"_a,
+                 "conc_first"_a, "conc_second"_a)
+            .def("calc_betas", &Convective::calcBetas,
+                 "concs"_a, "time"_a)
             .def_readwrite("betas", &Convective::_betas);
 
     py::class_<Equation, std::shared_ptr<Equation>>(m, "Equation")
@@ -96,6 +93,8 @@ PYBIND11_MODULE(diffusion_bind, m) {
 
 
 }
+
+
 
 
 //            .def_readwrite("params", &Props::_params)

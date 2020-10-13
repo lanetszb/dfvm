@@ -22,7 +22,7 @@
  */
 
 #include "Convective.h"
-#include "funcs.cpp"
+#include "funcs.h"
 #include <algorithm>
 #include <iterator>
 
