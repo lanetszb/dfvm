@@ -1,6 +1,7 @@
 #include "funcs.h"
 
 double calcAFunc(const double &conc, const double &poro) {
+
     return poro;
 }
 

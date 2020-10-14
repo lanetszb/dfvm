@@ -1,5 +1,6 @@
 import math
 from utilities import plot_x_y
+import matplotlib.pyplot as plt
 
 # conc analyt
 L = 10
@@ -26,5 +27,6 @@ for i in range(grid_block_n_analyt):
     conc_analyt.append(conc_it)
     time.append(i * dX)
 
-plot_x_y(time, conc_analyt, 'time, sec', 'concentration, kg/m3',
-         'Analytical solution', '-')
+fig, ax = plt.subplots()
+
+plot_x_y(ax, time, conc_analyt, 'time, sec', 'concentration, kg/m3', '-')
