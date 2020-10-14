@@ -42,20 +42,20 @@ Equation::Equation(std::shared_ptr<Props> props,
         _concsIni(new double[dim], dim),
         matrix(dim, dim),
         freeVector(new double[dim], dim) {
-
+	
     std::vector<Triplet> triplets;
     triplets.reserve(3 * dim - 4);
-
+	
     for (int i = 0; i < dim; i++)
         triplets.emplace_back(i, i);
-
+	
     std::vector<std::string> boundGroupsDirich{"left", "right"};
-    for (auto &nonDirichCell: findNonDirichCells(boundGroupsDirich)) {
+    for (auto &nonDirichCell: findNonDirichCells(boundGroupsDirich))
         for (auto &face: _sgrid->_neighborsFaces[nonDirichCell])
             for (auto &cell: _sgrid->_neighborsCells[face])
                 triplets.emplace_back(nonDirichCell, cell);
-        matrix.setFromTriplets(triplets.begin(), triplets.end());
-    }
+	
+	matrix.setFromTriplets(triplets.begin(), triplets.end());
 }
 
 
