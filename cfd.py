@@ -26,14 +26,12 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 
-from utilities import plot_x_y
-
 current_path = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(current_path, '../'))
-print(current_path)
 
-import diffusion_bind
-from diffusion_bind import Props, Local, Convective, Equation
+from dfvm import Props, Local, Convective, Equation
+from dfvm import calc_a_func, calc_b_func
+from dfvm import plot_x_y
 from sgrid import Sgrid, save_files_collection_to_file
 
 # model geometry
@@ -93,8 +91,8 @@ b_list = []
 conc_list = []
 for i in range(conc_min, conc_max):
     conc_list.append(i)
-    a_list.append(diffusion_bind.calc_a_func(i, poro))
-    b_list.append(diffusion_bind.calc_b_func(i, d_coeff_b, poro))
+    a_list.append(calc_a_func(i, poro))
+    b_list.append(calc_b_func(i, d_coeff_b, poro))
 
 # plotting the dependence of 'a' and 'b' coefficients on free concentration
 fig, axs = plt.subplots(2, sharex=True)

@@ -26,14 +26,12 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 
-from utilities import plot_x_y
-
 current_path = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(current_path, '../'))
-print(current_path)
 
-import diffusion_bind
-from diffusion_bind import Props, Local, Convective, Equation
+from dfvm import Props, Local, Convective, Equation
+from dfvm import calc_a_func, calc_b_func
+from dfvm import plot_x_y
 from sgrid import Sgrid, save_files_collection_to_file
 
 # model geometry
