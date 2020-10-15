@@ -115,6 +115,6 @@ for i in range(len(local.time_steps)):
     sgrid.cells_arrays = {'conc_i': equation.concs_time[i]}
     files_names.append(str(i) + '.vtu')
     files_descriptions.append(str(i))
-    sgrid.save('inOut/' + files_names[i])
+    sgrid.save_cells('inOut/' + files_names[i])
 
 save_files_collection_to_file(file_name, files_names, files_descriptions)
