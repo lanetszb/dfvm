@@ -75,7 +75,7 @@ public:
             (std::vector<std::string> &boundGroupsDirich);
 
     std::vector<int> groupVecsByKeys
-            (std::vector<std::string> &groups);
+            (const std::vector<std::string> &groups);
 
     void processNonBoundFaces(Eigen::Ref<Eigen::VectorXui64> faces);
 

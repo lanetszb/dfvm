@@ -44,6 +44,7 @@ double Convective::weighConc(const std::string &method, const double &conc0,
     else exit(0);
 }
 
+// ToDo: massive of diffusions which are going to be different for matrix and fractures
 void Convective::calcBetas(Eigen::Ref<Eigen::VectorXd> concs, double &time) {
 
     clock_t tStart = clock();
@@ -51,6 +52,7 @@ void Convective::calcBetas(Eigen::Ref<Eigen::VectorXd> concs, double &time) {
     auto &neighborsCells = _sgrid->_neighborsCells;
 
 
+    // ToDo: process by faceType
     for (int i = 0; i < _betas.size(); i++) {
         auto &neighborsCell = neighborsCells[i];
         auto &conc0 = concs(neighborsCell[0]);
@@ -60,7 +62,6 @@ void Convective::calcBetas(Eigen::Ref<Eigen::VectorXd> concs, double &time) {
 
         double diffusivity;
         double bCoeff;
-
         if (neighborsCells[i].size() == 2) {
             auto conc = weighConc("meanAverage", conc0, conc1);
             diffusivity = _props->calcD(conc);

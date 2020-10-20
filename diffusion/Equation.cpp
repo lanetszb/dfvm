@@ -42,26 +42,27 @@ Equation::Equation(std::shared_ptr<Props> props,
         _concsIni(new double[dim], dim),
         matrix(dim, dim),
         freeVector(new double[dim], dim) {
-	
+
     std::vector<Triplet> triplets;
     triplets.reserve(3 * dim - 4);
-	
+
     for (int i = 0; i < dim; i++)
         triplets.emplace_back(i, i);
-	
+
     std::vector<std::string> boundGroupsDirich{"left", "right"};
     for (auto &nonDirichCell: findNonDirichCells(boundGroupsDirich))
         for (auto &face: _sgrid->_neighborsFaces[nonDirichCell])
             for (auto &cell: _sgrid->_neighborsCells[face])
                 triplets.emplace_back(nonDirichCell, cell);
-	
-	matrix.setFromTriplets(triplets.begin(), triplets.end());
+
+    matrix.setFromTriplets(triplets.begin(), triplets.end());
 }
 
 
 void Equation::processNewmanFaces(const double &flowNewman,
                                   Eigen::Map<Eigen::VectorXui64> faces) {
-
+    // ToDo: change coeffsMatrix name (relate to surfaces) matrixFacesCells
+    // ToDo: ...freeFacesCells
     for (int i = 0; i < faces.size(); i++) {
         auto &face = faces[i];
         for (auto &cell : _sgrid->_neighborsCells[face]) {
@@ -87,7 +88,9 @@ void Equation::processNonBoundFaces(Eigen::Ref<Eigen::VectorXui64> faces) {
 
 }
 
-std::vector<int> Equation::groupVecsByKeys(std::vector<std::string> &groups) {
+// ToDo: uint64_t, method name groupCellsByTypes, process repitions
+std::vector<int> Equation::groupVecsByKeys
+        (const std::vector<std::string> &groups) {
 
     std::vector<int> groupedCells;
     for (auto &bound : groups) {
@@ -105,6 +108,7 @@ std::vector<int> Equation::findNonDirichCells(
         std::vector<std::string> &boundGroupsDirich) {
 
     auto dirichCells = groupVecsByKeys(boundGroupsDirich);
+    auto activeCells = groupVecsByKeys({"active"});
 
     std::vector<std::string> groupsNonDirich;
     for (auto &type : _sgrid->_typesCells)
@@ -237,7 +241,7 @@ void Equation::cfdProcedure() {
         _convective->calcBetas(_concs[iPrev], calcBetasTime);
         _local->calcAlphas(_concs[iPrev], timeStep);
 
-        processNonBoundFaces(_sgrid->_typesFaces.at("nonbound"));
+        processNonBoundFaces(_sgrid->_typesFaces.at("active_nonbound"));
         fillMatrix(fillMatrixTimes);
         processDirichCells(_boundGroupsDirich, _concsBoundDirich,
                            procesDirichCellsTime);

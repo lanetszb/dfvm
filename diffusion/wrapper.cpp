@@ -27,6 +27,7 @@
 #include <pybind11/stl.h>
 
 #include "math/Props.h"
+#include "math/Boundary.h"
 #include "math/Local.h"
 #include "math/Convective.h"
 #include "math/funcs.h"
@@ -48,6 +49,13 @@ PYBIND11_MODULE(diffusion_bind, m) {
             .def_readwrite("params", &Props::_params)
             .def("calc_D", &Props::calcD, "conc"_a)
             .def("print_params", &Props::printParams);
+
+    py::class_<Boundary, std::shared_ptr<Boundary>>(m, "Boundary")
+            .def(py::init<std::shared_ptr<Props>, std::shared_ptr<Sgrid>>(),
+                 "props"_a, "sgrid"_a)
+
+            .def("shift_faces", &Boundary::shiftFaces, "faces"_a,
+                 "axis"_a, "shift"_a);
 
     py::class_<Local, std::shared_ptr<Local>>(m, "Local")
             .def(py::init<std::shared_ptr<Props>, std::shared_ptr<Sgrid>>(),

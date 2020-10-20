@@ -41,21 +41,27 @@ spacing = [1., 1., 1.]
 
 sgrid = Sgrid(points_dims, points_origin, spacing)
 
+active_cells = np.array(np.where(np.ravel(np.load('inOut/image.npy'))),
+                        dtype=np.uint64).ravel()
+activity = np.load('inOut/image.npy').ravel().astype('float')
+
 # initial concentration
 conc_ini = 10.
 concs_array1 = np.tile(conc_ini, sgrid.cells_N)
 concs_array2 = np.tile(conc_ini, sgrid.cells_N)
-concs_arrays = {"concs_array1": concs_array1,
-                "concs_array2": concs_array2}
-sgrid.cells_arrays = concs_arrays
+cells_arrays = {'concs_array1': concs_array1,
+                'concs_array2': concs_array2}
+sgrid.cells_arrays = cells_arrays
+sgrid.set_cells_type('active', active_cells)
+sgrid.process_type_by_cells_type('active')
 # computation time
-time_period = 50.  # sec
+time_period = 900.  # sec
 # numerical time step
-time_step = 5.  # sec
+time_step = 90.  # sec
 
 # diffusivity coeffs (specify only b coeff to make free diffusion constant)
 d_coeff_a = float(0.0)  # m2/sec
-d_coeff_b = float(3.E-1)  # m2/sec
+d_coeff_b = float(15.E-1)  # m2/sec
 # porosity of rock
 poro = float(1)
 params = {'time_period': time_period, 'time_step': time_step,
