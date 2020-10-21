@@ -72,7 +72,7 @@ PYBIND11_MODULE(diffusion_bind, m) {
             .def(py::init<std::shared_ptr<Props>, std::shared_ptr<Sgrid>>(),
                  "props"_a, "sgrid"_a)
 
-            .def("weigh_conc", &Convective::weighConc, "method"_a,
+            .def("weigh_conc", &Convective::weighBcoeff, "method"_a,
                  "conc_first"_a, "conc_second"_a)
             .def("calc_betas", &Convective::calcBetas,
                  "concs"_a, "time"_a)

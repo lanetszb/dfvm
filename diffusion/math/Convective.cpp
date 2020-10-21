@@ -31,16 +31,24 @@ Convective::Convective(std::shared_ptr<Props> props,
         _props(props),
         _sgrid(sgrid),
         _betas(_sgrid->_facesN) {}
+
 // ToDo: weighinh diffusivity, not concentration
-double Convective::weighConc(const std::string &method, const double &conc0,
-                             const double &conc1) {
+double Convective::weighBcoeff(const std::string &method, const double &conc0,
+                               const double &conc1) {
+
+    auto poro = std::get<double>(_props->_params["poro"]);
+    auto diffusivity0 = _props->calcD(conc0);
+    auto bCoeff0 = calcBFunc(conc0, diffusivity0, poro);
+
+    auto diffusivity1 = _props->calcD(conc1);
+    auto bCoeff1 = calcBFunc(conc1, diffusivity1, poro);
 
     if (method == "meanAverage")
-        return (conc0 + conc1) / 2;
+        return (bCoeff0 + bCoeff1) / 2;
     else if (method == "meanHarmonic")
-        return 2. * conc0 * conc1 / (conc0 + conc1);
+        return 2. * bCoeff0 * bCoeff1 / (bCoeff0 + bCoeff1);
     else if (method == "upWind")
-        return std::max(conc0, conc1);
+        return std::max(bCoeff0, bCoeff1);
     else exit(0);
 }
 
@@ -58,19 +66,12 @@ void Convective::calcBetas(Eigen::Ref<Eigen::VectorXd> concs, double &time) {
         auto &conc0 = concs(neighborsCell[0]);
         auto &conc1 = concs(neighborsCell[1]);
 
-        auto poro = std::get<double>(_props->_params["poro"]);
-
-        double diffusivity;
         double bCoeff;
-        if (neighborsCells[i].size() == 2) {
-            auto conc = weighConc("meanAverage", conc0, conc1);
-            diffusivity = _props->calcD(conc);
-            bCoeff = calcBFunc(conc, diffusivity, poro);
-        } else {
-            auto conc = weighConc("meanAverage", conc0, conc0);
-            diffusivity = _props->calcD(conc);
-            bCoeff = calcBFunc(conc, diffusivity, poro);
-        }
+        if (neighborsCells[i].size() == 2)
+            bCoeff = weighBcoeff("meanAverage", conc0, conc1);
+        else
+            bCoeff = weighBcoeff("meanAverage", conc0, conc0);
+
 
         auto &axis = _sgrid->_facesAxes[i];
 
