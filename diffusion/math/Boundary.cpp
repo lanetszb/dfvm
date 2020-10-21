@@ -30,10 +30,19 @@ Boundary::Boundary(std::shared_ptr<Props> props,
         _props(props),
         _sgrid(sgrid) {}
 
-void Boundary::shiftFaces(Eigen::Ref<Eigen::VectorXui64> faces,
-                          const uint8_t &axis,
-                          const int16_t &shift) {
+void Boundary::shiftBoundaryFaces(Eigen::Ref<Eigen::VectorXui64> faces,
+                                  const uint8_t &axis) {
 
-    std::cout << "boundary" << std::endl;
+    for (uint64_t i = 0; i < faces.size(); i++) {
+        auto &face = faces[i];
+        auto neighborCell = _sgrid->_neighborsCells[face][0];
+        for (auto &neighborFace: _sgrid->_neighborsFaces[neighborCell]) {
+            auto neighborFaceAxis = _sgrid->calculateAxisFace(neighborFace);
+            if (neighborFace != face and neighborFaceAxis == axis) {
+                face = neighborFace;
+                break;
+            }
+        }
+    }
 
 }

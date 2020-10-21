@@ -268,6 +268,36 @@ void Equation::cfdProcedure() {
     printf("totalTime: %.2fs\n", totalTime / CLOCKS_PER_SEC);
 }
 
+double Equation::calcFacesFlowRate(Eigen::Ref<Eigen::VectorXui64> faces,
+                                   Eigen::Ref<Eigen::VectorXd> concs) {
+
+    auto &poro = std::get<double>(_props->_params["poro"]);
+
+    double totalFlowRate = 0;
+    for (uint64_t i = 0; i < faces.size(); i++) {
+        auto &face = faces[i];
+
+        auto &neighborsCells = _sgrid->_neighborsCells[face];
+        auto &conc0 = concs(neighborsCells[0]);
+        auto &conc1 = concs(neighborsCells[1]);
+
+        auto &normalsNeighborsCells = _sgrid->_normalsNeighborsCells[face];
+        auto &norm0 = normalsNeighborsCells[0];
+        auto &norm1 = normalsNeighborsCells[1];
+
+        auto &axis = _sgrid->_facesAxes[face];
+        // ToDo: consider more general case
+        auto &diffusivity = std::get<double>(_props->_params["d_coeff_b"]);
+        auto &dS = _sgrid->_facesSs[axis];
+        auto &dL = _sgrid->_spacing[axis];
+
+        totalFlowRate -=
+                poro * diffusivity * (norm0 * conc0 + norm1 * conc1) * dS / dL;
+    }
+
+    return totalFlowRate;
+}
+
 std::vector<Eigen::Ref<Eigen::VectorXd>> Equation::getConcs() {
     return Eigen::vectorGetter<Eigen::VectorXd>(_concs);
 }

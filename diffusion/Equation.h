@@ -89,6 +89,9 @@ public:
 
     void cfdProcedure();
 
+    double calcFacesFlowRate(Eigen::Ref<Eigen::VectorXui64> faces,
+                             Eigen::Ref<Eigen::VectorXd> concs);
+
     // temporary function, will be later provided by sgrid
 
     std::shared_ptr<Props> _props;
@@ -113,6 +116,8 @@ public:
 
     Matrix matrix;
     Eigen::Map<Eigen::VectorXd> freeVector;
+
+
 };
 
 #endif // EQUATION_H

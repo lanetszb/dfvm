@@ -42,9 +42,8 @@ public:
 
     virtual ~Boundary() {}
 
-    void shiftFaces(Eigen::Ref<Eigen::VectorXui64> faces,
-                    const uint8_t &axis,
-                    const int16_t &shift);
+    void shiftBoundaryFaces(Eigen::Ref<Eigen::VectorXui64> faces,
+                            const uint8_t &axis);
 
     std::shared_ptr<Props> _props;
     std::shared_ptr<Sgrid> _sgrid;

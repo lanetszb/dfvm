@@ -31,7 +31,7 @@ Convective::Convective(std::shared_ptr<Props> props,
         _props(props),
         _sgrid(sgrid),
         _betas(_sgrid->_facesN) {}
-
+// ToDo: weighinh diffusivity, not concentration
 double Convective::weighConc(const std::string &method, const double &conc0,
                              const double &conc1) {
 

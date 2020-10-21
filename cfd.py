@@ -24,18 +24,19 @@
 import sys
 import os
 import numpy as np
+import copy
 import matplotlib.pyplot as plt
 
 current_path = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(current_path, '../'))
 
-from dfvm import Props, Local, Convective, Equation
+from dfvm import Props, Boundary, Local, Convective, Equation
 from dfvm import calc_a_func, calc_b_func
 from dfvm import plot_x_y
 from sgrid import Sgrid, save_files_collection_to_file
 
 # model geometry
-points_dims = [10, 10, 10]
+points_dims = [10, 2, 2]
 points_origin = [0., 0., 0.]
 spacing = [1., 1., 1.]
 
@@ -68,20 +69,32 @@ poro = float(1)
 params = {'time_period': time_period, 'time_step': time_step,
           'd_coeff_a': d_coeff_a, 'd_coeff_b': d_coeff_b,
           'poro': poro}
-#
+
+key_dirichlet_one = 'left'
+key_dirichlet_two = 'right'
+
 props = Props(params)
+boundary = Boundary(props, sgrid)
+boundary_faces = copy.deepcopy(sgrid.types_faces[key_dirichlet_two])
+boundary_faces_axis = sgrid.faces_axes[boundary_faces[0]]
+boundary.shift_boundary_faces(boundary_faces, boundary_faces_axis)
+
 local = Local(props, sgrid)
 convective = Convective(props, sgrid)
-
 equation = Equation(props, sgrid, local, convective)
 
 # dirichlet cells (options: left, right, top, bottom, front, back)
-equation.bound_groups_dirich = ['left', 'right']
+equation.bound_groups_dirich = [key_dirichlet_one, key_dirichlet_two]
 # concentration on dirichlet cells
-conc_left = float(10)
-conc_right = float(20)
-equation.concs_bound_dirich = {'left': conc_left, 'right': conc_right}
+conc_left = float(20)
+conc_right = float(10)
+equation.concs_bound_dirich = {key_dirichlet_one: conc_left,
+                               key_dirichlet_two: conc_right}
 equation.cfd_procedure()
+
+flow_rate_boundary = equation.calc_faces_flow_rate(boundary_faces,
+                                                   equation.concs_time[1])
+print(flow_rate_boundary)
 
 # visualising 'a' and 'b' coefficients
 # set concentration range for visualisation
