@@ -269,8 +269,7 @@ void Equation::cfdProcedure() {
     printf("totalTime: %.2fs\n", totalTime / CLOCKS_PER_SEC);
 }
 
-double Equation::calcFacesFlowRate(Eigen::Ref<Eigen::VectorXui64> faces,
-                                   Eigen::Ref<Eigen::VectorXd> concs) {
+double Equation::calcFacesFlowRate(Eigen::Ref<Eigen::VectorXui64> faces) {
 
     auto &poro = std::get<double>(_props->_params["poro"]);
 
@@ -279,21 +278,29 @@ double Equation::calcFacesFlowRate(Eigen::Ref<Eigen::VectorXui64> faces,
         auto &face = faces[i];
 
         auto &neighborsCells = _sgrid->_neighborsCells[face];
-        auto &conc0 = concs(neighborsCells[0]);
-        auto &conc1 = concs(neighborsCells[1]);
+        auto &conc_prev0 = _concs[iPrev](neighborsCells[0]);
+        auto &conc_prev1 = _concs[iPrev](neighborsCells[1]);
 
         auto &normalsNeighborsCells = _sgrid->_normalsNeighborsCells[face];
         auto &norm0 = normalsNeighborsCells[0];
         auto &norm1 = normalsNeighborsCells[1];
 
+        auto diffusivity0 = _props->calcD(conc_prev0);
+        auto diffusivity1 = _props->calcD(conc_prev1);
+
         auto &axis = _sgrid->_facesAxes[face];
         // ToDo: consider more general case
-        auto &diffusivity = std::get<double>(_props->_params["d_coeff_b"]);
+        auto diffusivity = _convective->weighing("meanAverage",
+                                                 diffusivity0, diffusivity1);
+
+        auto &conc_curr0 = _concs[iCurr](neighborsCells[0]);
+        auto &conc_curr1 = _concs[iCurr](neighborsCells[1]);
         auto &dS = _sgrid->_facesSs[axis];
         auto &dL = _sgrid->_spacing[axis];
 
         totalFlowRate -=
-                poro * diffusivity * (norm0 * conc0 + norm1 * conc1) * dS / dL;
+                poro * diffusivity *
+                (norm0 * conc_curr0 + norm1 * conc_curr1) * dS / dL;
     }
 
     return totalFlowRate;

@@ -91,9 +91,7 @@ conc_right = float(10)
 equation.concs_bound_dirich = {key_dirichlet_one: conc_left,
                                key_dirichlet_two: conc_right}
 equation.cfd_procedure()
-
-flow_rate_boundary = equation.calc_faces_flow_rate(boundary_faces,
-                                                   equation.concs_time[1])
+flow_rate_boundary = equation.calc_faces_flow_rate(boundary_faces)
 print(flow_rate_boundary)
 
 # visualising 'a' and 'b' coefficients

@@ -89,8 +89,7 @@ public:
 
     void cfdProcedure();
 
-    double calcFacesFlowRate(Eigen::Ref<Eigen::VectorXui64> faces,
-                             Eigen::Ref<Eigen::VectorXd> concs);
+    double calcFacesFlowRate(Eigen::Ref<Eigen::VectorXui64> faces);
 
     std::shared_ptr<Props> _props;
     std::shared_ptr<Sgrid> _sgrid;

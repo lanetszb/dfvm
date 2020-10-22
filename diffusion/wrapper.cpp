@@ -72,7 +72,7 @@ PYBIND11_MODULE(diffusion_bind, m) {
             .def(py::init<std::shared_ptr<Props>, std::shared_ptr<Sgrid>>(),
                  "props"_a, "sgrid"_a)
 
-            .def("weigh_conc", &Convective::weighBcoeff, "method"_a,
+            .def("weigh_conc", &Convective::weighing, "method"_a,
                  "conc_first"_a, "conc_second"_a)
             .def("calc_betas", &Convective::calcBetas,
                  "concs"_a, "time"_a)
@@ -89,7 +89,7 @@ PYBIND11_MODULE(diffusion_bind, m) {
             .def("calc_concs_explicit", &Equation::calcConcsExplicit)
             .def("cfd_procedure", &Equation::cfdProcedure)
             .def("calc_faces_flow_rate", &Equation::calcFacesFlowRate,
-                 "faces"_a, "concs"_a)
+                 "faces"_a)
             .def_readwrite("dim", &Equation::dim)
             .def_readwrite("i_curr", &Equation::iCurr)
             .def_readwrite("i_prev", &Equation::iPrev)
