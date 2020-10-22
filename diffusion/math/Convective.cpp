@@ -32,7 +32,6 @@ Convective::Convective(std::shared_ptr<Props> props,
         _sgrid(sgrid),
         _betas(_sgrid->_facesN) {}
 
-// ToDo: weighinh diffusivity, not concentration
 double Convective::weighBcoeff(const std::string &method, const double &conc0,
                                const double &conc1) {
 
@@ -58,27 +57,34 @@ void Convective::calcBetas(Eigen::Ref<Eigen::VectorXd> concs, double &time) {
     clock_t tStart = clock();
 
     auto &neighborsCells = _sgrid->_neighborsCells;
+    auto boundFaces = _sgrid->_typesFaces.at("active_bound");
+    auto nonBoundFaces = _sgrid->_typesFaces.at("active_nonbound");
 
+    for (int i = 0; i < boundFaces.size(); i++) {
+        auto boundFace = boundFaces[i];
+        auto &faceNeighborsCell = neighborsCells[boundFace];
+        auto &conc0 = concs(faceNeighborsCell[0]);
 
-    // ToDo: process by faceType
-    for (int i = 0; i < _betas.size(); i++) {
-        auto &neighborsCell = neighborsCells[i];
-        auto &conc0 = concs(neighborsCell[0]);
-        auto &conc1 = concs(neighborsCell[1]);
+        auto bCoeff = weighBcoeff("meanAverage", conc0, conc0);
+        auto &axis = _sgrid->_facesAxes[boundFace];
 
-        double bCoeff;
-        if (neighborsCells[i].size() == 2)
-            bCoeff = weighBcoeff("meanAverage", conc0, conc1);
-        else
-            bCoeff = weighBcoeff("meanAverage", conc0, conc0);
-
-
-        auto &axis = _sgrid->_facesAxes[i];
-
-        _betas[i] = bCoeff * _sgrid->_facesSs[axis]
-                    / _sgrid->_spacing[axis];
-
+        _betas[boundFace] =
+                bCoeff * _sgrid->_facesSs[axis] / _sgrid->_spacing[axis];
     }
+
+    for (int i = 0; i < nonBoundFaces.size(); i++) {
+        auto nonBoundFace = nonBoundFaces[i];
+        auto &faceNeighborsCell = neighborsCells[nonBoundFace];
+        auto &conc0 = concs(faceNeighborsCell[0]);
+        auto &conc1 = concs(faceNeighborsCell[1]);
+
+        auto bCoeff = weighBcoeff("meanAverage", conc0, conc1);
+        auto &axis = _sgrid->_facesAxes[nonBoundFace];
+
+        _betas[nonBoundFace] = bCoeff * _sgrid->_facesSs[axis]
+                               / _sgrid->_spacing[axis];
+    }
+
     std::cout << std::endl;
     time += (double) (clock() - tStart);
 }

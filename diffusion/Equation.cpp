@@ -100,9 +100,12 @@ std::vector<int> Equation::groupVecsByKeys
                             cells.data() + cells.size());
     }
 
+    sort(groupedCells.begin(), groupedCells.end());
+    groupedCells.erase(unique(groupedCells.begin(), groupedCells.end()),
+                       groupedCells.end());
+
     return groupedCells;
 }
-
 
 std::vector<int> Equation::findNonDirichCells(
         std::vector<std::string> &boundGroupsDirich) {
@@ -117,11 +120,6 @@ std::vector<int> Equation::findNonDirichCells(
                 groupsNonDirich.push_back(type.first);
 
     auto nonDirichCellsDump = groupVecsByKeys(groupsNonDirich);
-    sort(dirichCells.begin(), dirichCells.end());
-    sort(nonDirichCellsDump.begin(), nonDirichCellsDump.end());
-    nonDirichCellsDump.erase(
-            unique(nonDirichCellsDump.begin(), nonDirichCellsDump.end()),
-            nonDirichCellsDump.end());
 
     std::vector<int> nonDirichCells;
     std::set_difference(std::begin(nonDirichCellsDump),

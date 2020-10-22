@@ -117,8 +117,8 @@ where $\Delta V$~--~volume of a particular grid-block, $\Delta t$~--~numerical t
 The parameters $\Delta^{t}$ and $\Delta^{m}$ described by Eq. (\ref{eq:general_diffusivity_num}) are expressed as follows:
     \begin{eqnarray}
     \label{eq:general_delta_num}
-    \Delta_t = C^{n+1} - C^{n}, \Delta_x = \begin{cases}
-    C_{+}^{n+\mathit1} - C_{-}^{n+\mathit1} : &\text{implicit},\\
+    \Delta_t = C^{n+\mathit{1}} - C^{n}, \Delta_x = \begin{cases}
+    C_{+}^{n+\mathit{1}} - C_{-}^{n+\mathit{1}} : &\text{implicit},\\
         C_{+}^{n} - C_{-}^{n} : &\text{explicit},
     \end{cases}
     \end{eqnarray}
@@ -137,7 +137,7 @@ Gas-coalbed system consists of the following mass balances for any component in 
 \begin{eqnarray}
 \begin{gathered}
 \label{eq:langm_only_adsorbed_diffusivity_differential}
-\frac{\partial C_{fi}}{\partial t} - \vec{\nabla} D_{fi} \vec{\nabla}C_{fi} = - \frac{1 - \phi}{\phi} \frac{\partial C_{si}}{\partial t},
+\frac{\partial C_{fi}}{\partial t} - \vec{\nabla} D_{fi} \vec{\nabla}C_{fi} = - \frac{\mathit{1} - \phi}{\phi} \frac{\partial C_{si}}{\partial t},
 \end{gathered}
 \end{eqnarray}
 where $i$ - index of  a particular component, $C_{fi}$~--~total free gas concentration, $C_{si}$~--~adsorbed concentration, $D_{fi}$~--~effective molecular pore diffusion coefficient.
@@ -150,35 +150,46 @@ Knowing that
 
 \begin{eqnarray}
 \label{eq:langm_only_adsorbed_conc}
-C_{si} =  \frac{C_{s} b_{i}' C_{fi}}{1+b_{i}'C_{fi}+b_{j}'C_{fj}},
+C_{si} =  \frac{C_{s} b_{i}' C_{fi}}{\mathit{1}+b_{i}'C_{fi}+b_{j}'C_{fj}},
 \end{eqnarray}
 
 \begin{eqnarray}
 \label{eq:langm_only_adsorbed_conc_deriv}
-C_{si}' =  \frac{C_{s}b_{i}' \left(1+b_{j}'\rho_{j}\right)}{\left(1+b_{i}'C_{fi}+b_{j}'C_{fj}\right)^2},
+C_{si}' =  \frac{C_{s}b_{i}' \left(\mathit{1}+b_{j}'\rho_{j}\right)}{\left(\mathit{1}+b_{i}'C_{fi}+b_{j}'C_{fj}\right)^\mathit{2}},
 \end{eqnarray}
 and by applying the divergence theorem, the following equation can be obtained
 \begin{eqnarray}
 \label{eq:langm_only_diffusivity_simplified_integral}
-\int \limits_{V} a_{i} \frac{\partial C_{fi}}{\partial t} dV - \oint \limits_{S} b_{i} \vec{\nabla}C_{fi} \; \vec{dS} = 0,
+\int \limits_{V} a_{i} \frac{\partial C_{fi}}{\partial t} dV - \oint \limits_{S} b_{i} \vec{\nabla}C_{fi} \; \vec{dS} = \mathit{0},
 \end{eqnarray}
 
 where
 \begin{eqnarray}
 \begin{gathered}
 \label{eq:langm_only_diffusivity_a_b_coeffs}
-a_{i}  =  1+\frac{1 - \phi}{\phi}C_{si}', \: b_{i}  = D_{i},
+a_{i}  =  \mathit{1}+\frac{\mathit{1} - \phi}{\phi}C_{si}', \: b_{i}  = D_{i},
 \end{gathered}
 \end{eqnarray}
 The following constraints must be satisfied during the simulation
 \begin{eqnarray}
 \label{eq:langm_only_concentration_constaints}
-a_{i}, b_{i} \mid 0 \leq C_{fi} \leq \rho_i,
+a_{i}, b_{i} \mid \mathit{0} \leq C_{fi} \leq \rho_i,
 \end{eqnarray}
 
 \begin{eqnarray}
 \label{eq:langm_only_diffusivity_densities}
-C_{fj} =\rho_j -  \frac{\rho_j}{\rho_i}C_{fi}.
+C_{fj} =\rho_j -  \frac{\rho_j}{\rho_i}C_{fi},
+\end{eqnarray} 
+
+The flow rate can be calculated as follows
+\begin{eqnarray}
+\label{eq:langm_only_flow_rate_i}
+G_{fi} = - D_{fi}S \:\nabla C_{fi},
+\end{eqnarray} 
+
+\begin{eqnarray}
+\label{eq:langm_only_flow_rate_j}
+G_{fj} = -  \frac{\rho_j}{\rho_i}G_{fi}.
 \end{eqnarray} 
 
 \subsection*{Two-phase two-component (Langmuir \& Fick)}
@@ -193,7 +204,7 @@ Gas-coalbed system consists of the following mass balances for one of the compon
 \begin{eqnarray}
 \begin{gathered}
 \label{eq:multiphase_adsorbed_diffusivity_differential}
-\left(1-\phi\right) \frac{\partial C_{si}}{\partial t}  - \vec{\nabla} \left(1-\phi\right) D_{si} \vec{\nabla}C_{si} = -J_i,
+\left(\mathit{1}-\phi\right) \frac{\partial C_{si}}{\partial t}  - \vec{\nabla} \left(\mathit{1}-\phi\right) D_{si} \vec{\nabla}C_{si} = -J_i,
 \end{gathered}
 \end{eqnarray}
 
@@ -209,7 +220,7 @@ where $i$ - index of  a particular component, $C_{f}$~--~total free gas concentr
 \begin{eqnarray}
 \begin{gathered}
 \label{eq:multiphase_adsorbed_diffusivity_integral}
-\int \limits_{V} \left(1-\phi\right) \frac{\partial C_{si}}{\partial t} dV - \oint \limits_{S} \left(1-\phi\right) D_{si} \vec{\nabla}C_{si} \; \vec{dS} = -\int \limits_{V}J_i \; dV,
+\int \limits_{V} \left(\mathit{1}-\phi\right) \frac{\partial C_{si}}{\partial t} dV - \oint \limits_{S} \left(\mathit{1}-\phi\right) D_{si} \vec{\nabla}C_{si} \; \vec{dS} = -\int \limits_{V}J_i \; dV,
 \end{gathered}
 \end{eqnarray}
 
@@ -226,7 +237,7 @@ both Eqs. (\ref{eq:multiphase_free_diffusivity_integral}) and (\ref{eq:multiphas
 
 \begin{eqnarray}
 \label{eq:multiphase_diffusivity_densities}
-b_{fi}, b_{fj}, J_{i}, J_{j} \mid \frac{C_{fi}}{\rho_i} + \frac{C_{fj}}{\rho_j} = 1,
+b_{fi}, b_{fj}, J_{i}, J_{j} \mid \frac{C_{fi}}{\rho_i} + \frac{C_{fj}}{\rho_j} = \mathit{1},
 \end{eqnarray}
 where 
 
@@ -239,7 +250,7 @@ a_{f} = \phi, \; b_{fi} = \phi D_{fi},
 \begin{eqnarray}
 \label{eq:multiphase_diffusivity_a_b_coeffs_adsorbed}
 \begin{gathered}
-a_{s} = \left(1-\phi\right), \; b_{si} = \left(1-\phi\right) D_{si}.
+a_{s} = \left(\mathit{1}-\phi\right), \; b_{si} = \left(\mathit{1}-\phi\right) D_{si}.
 \end{gathered}
 \end{eqnarray}
 
@@ -272,7 +283,7 @@ Gas-coalbed system consists of the following mass balances for any component in 
 \begin{eqnarray}
 \begin{gathered}
 \label{eq:langm_fick_diffusivity_differential}
-\phi\frac{\partial C_{fi}}{\partial t} + \left(1-\phi\right)\frac{\partial C_{si}}{\partial t} - \vec{\nabla} \phi D_{fi} \vec{\nabla}C_{fi} - \vec{\nabla}\left(1-\phi \right) D_{si} \vec{\nabla}C_{si} = 0,
+\phi\frac{\partial C_{fi}}{\partial t} + \left(\mathit{1}-\phi\right)\frac{\partial C_{si}}{\partial t} - \vec{\nabla} \phi D_{fi} \vec{\nabla}C_{fi} - \vec{\nabla}\left(\mathit{1}-\phi \right) D_{si} \vec{\nabla}C_{si} =  \mathit{0},
 \end{gathered}
 \end{eqnarray}
 where $i$ - index of  a particular component, $C_{fi}$~--~total free gas concentration, $\phi$~--~is total porosity, $C_{si}$~--~adsorbed concentration, $D_{fi}$~--~effective molecular pore diffusion coefficient, $D_{si}$~--~surface molecular diffusion coefficient.
@@ -286,14 +297,14 @@ Using Eqs. (\ref{eq:langm_only_chain_rule_timeder}), (\ref{eq:langm_only_adsorbe
 we can apply the divergence theorem and obtain the following equation:
 \begin{eqnarray}
 \label{eq:langm_fick_diffusivity_simplified_integral}
-\int \limits_{V} a_{i} \frac{\partial C_{fi}}{\partial t} d V - \oint \limits_{S} b_{i} \vec{\nabla}C_{fi} \; \vec{dS} = 0,
+\int \limits_{V} a_{i} \frac{\partial C_{fi}}{\partial t} d V - \oint \limits_{S} b_{i} \vec{\nabla}C_{fi} \; \vec{dS} =  \mathit{0},
 \end{eqnarray}
 where  
 \begin{eqnarray}
 \begin{gathered}
 \label{eq:langm_fick_diffusivity_a_b_coeffs}
-a_{i}  =  \phi + \left(1-\phi \right)C_{si}', \\ 
-b_{i}  = \phi D_{fi} + \left(1-\phi \right) C_{si}'D_{si},
+a_{i}  =  \phi + \left(\mathit{1}-\phi \right)C_{si}', \\ 
+b_{i}  = \phi D_{fi} + \left(\mathit{1}-\phi \right) C_{si}'D_{si},
 \end{gathered}
 \end{eqnarray}
 
@@ -301,7 +312,7 @@ The following constraints must be satisfied during the simulation
 
 \begin{eqnarray}
 \label{eq:angm_fick_concentration_constaints}
-a_{i}, b_{i} \mid 0 \leq C_{fi} \leq \rho_i,
+a_{i}, b_{i} \mid  \mathit{0} \leq C_{fi} \leq \rho_i,
 \end{eqnarray}
 
 \begin{eqnarray}
