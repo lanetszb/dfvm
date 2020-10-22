@@ -76,7 +76,7 @@ equation = Equation(props, sgrid, local, convective)
 # dirichlet cells (options: left, right, top, bottom, front, back)
 equation.bound_groups_dirich = ['left', 'right']
 # concentration on dirichlet cells
-conc_left = float(10)
+conc_left = float(15)
 conc_right = float(20)
 equation.concs_bound_dirich = {'left': conc_left, 'right': conc_right}
 equation.cfd_procedure()

@@ -31,7 +31,7 @@ Convective::Convective(std::shared_ptr<Props> props,
         _props(props),
         _sgrid(sgrid),
         _betas(_sgrid->_facesN) {}
-
+// ToDo: weighing (method, valueA, valueB)
 double Convective::weighBcoeff(const std::string &method, const double &conc0,
                                const double &conc1) {
 
@@ -85,6 +85,5 @@ void Convective::calcBetas(Eigen::Ref<Eigen::VectorXd> concs, double &time) {
                                / _sgrid->_spacing[axis];
     }
 
-    std::cout << std::endl;
     time += (double) (clock() - tStart);
 }

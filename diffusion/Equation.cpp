@@ -61,13 +61,12 @@ Equation::Equation(std::shared_ptr<Props> props,
 
 void Equation::processNewmanFaces(const double &flowNewman,
                                   Eigen::Map<Eigen::VectorXui64> faces) {
-    // ToDo: change coeffsMatrix name (relate to surfaces) matrixFacesCells
-    // ToDo: ...freeFacesCells
+
     for (int i = 0; i < faces.size(); i++) {
         auto &face = faces[i];
         for (auto &cell : _sgrid->_neighborsCells[face]) {
-            _coeffsMatrix[face][cell] = 0;
-            _coeffsFreeVec[face][cell] = flowNewman;
+            _matrixFacesCells[face][cell] = 0;
+            _freeFacesCells[face][cell] = flowNewman;
         }
     }
 
@@ -81,18 +80,17 @@ void Equation::processNonBoundFaces(Eigen::Ref<Eigen::VectorXui64> faces) {
         for (int j = 0; j < cells.size(); j++) {
             auto &cell = cells[j];
             auto &normal = _sgrid->_normalsNeighborsCells[face][j];
-            _coeffsMatrix[face][cell] = normal * _convective->_betas[face];
-            _coeffsFreeVec[face][cell] = 0;
+            _matrixFacesCells[face][cell] = normal * _convective->_betas[face];
+            _freeFacesCells[face][cell] = 0;
         }
     }
 
 }
 
-// ToDo: uint64_t, method name groupCellsByTypes, process repitions
-std::vector<int> Equation::groupVecsByKeys
+std::vector<uint64_t> Equation::groupCellsByTypes
         (const std::vector<std::string> &groups) {
 
-    std::vector<int> groupedCells;
+    std::vector<uint64_t> groupedCells;
     for (auto &bound : groups) {
         auto cells = _sgrid->_typesCells.at(bound);
         auto position = groupedCells.end();
@@ -107,23 +105,15 @@ std::vector<int> Equation::groupVecsByKeys
     return groupedCells;
 }
 
-std::vector<int> Equation::findNonDirichCells(
+std::vector<uint64_t> Equation::findNonDirichCells(
         std::vector<std::string> &boundGroupsDirich) {
 
-    auto dirichCells = groupVecsByKeys(boundGroupsDirich);
-    auto activeCells = groupVecsByKeys({"active"});
+    auto dirichCells = groupCellsByTypes(boundGroupsDirich);
+    auto activeCells = groupCellsByTypes({"active"});
 
-    std::vector<std::string> groupsNonDirich;
-    for (auto &type : _sgrid->_typesCells)
-        for (auto &typeDirich : boundGroupsDirich)
-            if (typeDirich != type.first)
-                groupsNonDirich.push_back(type.first);
-
-    auto nonDirichCellsDump = groupVecsByKeys(groupsNonDirich);
-
-    std::vector<int> nonDirichCells;
-    std::set_difference(std::begin(nonDirichCellsDump),
-                        std::end(nonDirichCellsDump),
+    std::vector<uint64_t> nonDirichCells;
+    std::set_difference(std::begin(activeCells),
+                        std::end(activeCells),
                         std::begin(dirichCells), std::end(dirichCells),
                         std::back_inserter(nonDirichCells));
 
@@ -150,15 +140,15 @@ void Equation::fillMatrix(std::map<std::string, double> &times) {
         auto faces = _sgrid->_neighborsFaces[nonDirichCell];
         auto normalsFaces = _sgrid->_normalsNeighborsFaces[nonDirichCell];
         for (int j = 0; j < faces.size(); j++) {
-
+            auto face = faces[j];
+            auto normalFace = normalsFaces[j];
             clock_t loopLoopTimeStart = clock();
 
-            for (const auto&[cell, cellCoeff] : _coeffsMatrix[faces[j]]) {
+            for (const auto&[cell, cellCoeff] : _matrixFacesCells[face]) {
 
                 clock_t loopLoopLoopTimeStart = clock();
 
-                matrix.coeffRef(nonDirichCell, cell) +=
-                        normalsFaces[j] * cellCoeff;
+                matrix.coeffRef(nonDirichCell, cell) += normalFace * cellCoeff;
 
                 times["loopLoopLoop"] += (double) (clock() -
                                                    loopLoopLoopTimeStart);
@@ -183,11 +173,24 @@ void Equation::processDirichCells(std::vector<std::string> &boundGroups,
 
     clock_t tStart = clock();
 
+    auto activeBoundCells = groupCellsByTypes({"active_bound"});
+
     for (auto &bound : boundGroups) {
         auto &conc = concsBound[bound];
-        auto cells = _sgrid->_typesCells.at(bound);
-        for (int j = 0; j < cells.size(); j++) {
-            auto cell = cells[j];
+
+        auto dirichCells = groupCellsByTypes({bound});
+
+        std::vector<int> dirichCellsActive(
+                activeBoundCells.size() + activeBoundCells.size());
+
+        set_intersection(activeBoundCells.begin(),
+                         activeBoundCells.end(),
+                         dirichCells.begin(),
+                         dirichCells.end(),
+                         dirichCellsActive.begin());
+
+        for (int j = 0; j < dirichCellsActive.size(); j++) {
+            auto cell = dirichCellsActive[j];
             freeVector[cell] = conc * _local->_alphas[cell];
         }
     }

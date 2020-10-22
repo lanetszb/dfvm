@@ -71,10 +71,10 @@ public:
                             std::map<std::string, double> &concsBound,
                             double &time);
 
-    std::vector<int> findNonDirichCells
+    std::vector<uint64_t> findNonDirichCells
             (std::vector<std::string> &boundGroupsDirich);
 
-    std::vector<int> groupVecsByKeys
+    std::vector<uint64_t> groupCellsByTypes
             (const std::vector<std::string> &groups);
 
     void processNonBoundFaces(Eigen::Ref<Eigen::VectorXui64> faces);
@@ -91,8 +91,6 @@ public:
 
     double calcFacesFlowRate(Eigen::Ref<Eigen::VectorXui64> faces,
                              Eigen::Ref<Eigen::VectorXd> concs);
-
-    // temporary function, will be later provided by sgrid
 
     std::shared_ptr<Props> _props;
     std::shared_ptr<Sgrid> _sgrid;
@@ -111,8 +109,8 @@ public:
     std::vector<Eigen::Map<Eigen::VectorXd>> _concsTime;
     Eigen::Map<Eigen::VectorXd> _concsIni;
 
-    std::map<int, std::map<int, double>> _coeffsMatrix;
-    std::map<int, std::map<int, double>> _coeffsFreeVec;
+    std::map<int, std::map<int, double>> _matrixFacesCells;
+    std::map<int, std::map<int, double>> _freeFacesCells;
 
     Matrix matrix;
     Eigen::Map<Eigen::VectorXd> freeVector;
