@@ -36,7 +36,7 @@ from dfvm import plot_x_y
 from sgrid import Sgrid, save_files_collection_to_file
 
 # model geometry
-points_dims = [10, 2, 2]
+points_dims = [10, 10, 10]
 points_origin = [0., 0., 0.]
 spacing = [1., 1., 1.]
 

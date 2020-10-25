@@ -177,17 +177,15 @@ void Equation::processDirichCells(std::vector<std::string> &boundGroups,
 
     for (auto &bound : boundGroups) {
         auto &conc = concsBound[bound];
-
         auto dirichCells = groupCellsByTypes({bound});
 
-        std::vector<int> dirichCellsActive(
-                activeBoundCells.size() + activeBoundCells.size());
+        std::vector<int> dirichCellsActive;
 
         set_intersection(activeBoundCells.begin(),
                          activeBoundCells.end(),
                          dirichCells.begin(),
                          dirichCells.end(),
-                         dirichCellsActive.begin());
+                         std::back_inserter(dirichCellsActive));
 
         for (int j = 0; j < dirichCellsActive.size(); j++) {
             auto cell = dirichCellsActive[j];
