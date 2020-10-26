@@ -68,8 +68,7 @@ public:
                             Eigen::Map<Eigen::VectorXui64> faces);
 
     void processDirichCells(std::vector<std::string> &boundGroups,
-                            std::map<std::string, double> &concsBound,
-                            double &time);
+                            std::map<std::string, double> &concsBound);
 
     std::vector<uint64_t> findNonDirichCells
             (std::vector<std::string> &boundGroupsDirich);
@@ -79,13 +78,15 @@ public:
 
     void processNonBoundFaces(Eigen::Ref<Eigen::VectorXui64> faces);
 
-    void fillMatrix(std::map<std::string, double> &times);
+    void fillMatrix();
 
     void calcConcsIni();
 
-    void calcConcsImplicit(double &time);
+    void calcConcsImplicit();
 
     void calcConcsExplicit();
+
+    void cfdProcedureOneStep(const double &timeStep);
 
     void cfdProcedure();
 

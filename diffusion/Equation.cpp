@@ -120,9 +120,7 @@ std::vector<uint64_t> Equation::findNonDirichCells(
     return nonDirichCells;
 }
 
-void Equation::fillMatrix(std::map<std::string, double> &times) {
-
-    clock_t timeStart = clock();
+void Equation::fillMatrix() {
 
     for (int i = 0; i < dim; ++i)
         for (MatrixIterator it(matrix, i); it; ++it)
@@ -135,43 +133,20 @@ void Equation::fillMatrix(std::map<std::string, double> &times) {
 
     for (auto &nonDirichCell: findNonDirichCells(_boundGroupsDirich)) {
 
-        clock_t loopTimeStart = clock();
-
         auto faces = _sgrid->_neighborsFaces[nonDirichCell];
         auto normalsFaces = _sgrid->_normalsNeighborsFaces[nonDirichCell];
         for (int j = 0; j < faces.size(); j++) {
             auto face = faces[j];
             auto normalFace = normalsFaces[j];
-            clock_t loopLoopTimeStart = clock();
-
-            for (const auto&[cell, cellCoeff] : _matrixFacesCells[face]) {
-
-                clock_t loopLoopLoopTimeStart = clock();
-
+            for (const auto&[cell, cellCoeff] : _matrixFacesCells[face])
                 matrix.coeffRef(nonDirichCell, cell) += normalFace * cellCoeff;
-
-                times["loopLoopLoop"] += (double) (clock() -
-                                                   loopLoopLoopTimeStart);
-
-            }
-
-            times["loopLoop"] += (double) (clock() - loopLoopTimeStart);
-
         }
-
-        times["loop"] += (double) (clock() - loopTimeStart);
-
     }
-
-    times["whole"] += (double) (clock() - timeStart);
 
 }
 
 void Equation::processDirichCells(std::vector<std::string> &boundGroups,
-                                  std::map<std::string, double> &concsBound,
-                                  double &time) {
-
-    clock_t tStart = clock();
+                                  std::map<std::string, double> &concsBound) {
 
     auto activeBoundCells = groupCellsByTypes({"active_bound"});
 
@@ -193,20 +168,15 @@ void Equation::processDirichCells(std::vector<std::string> &boundGroups,
         }
     }
 
-    time += (double) (clock() - tStart);
 }
 
-void Equation::calcConcsImplicit(double &time) {
-
-    clock_t tStart = clock();
+void Equation::calcConcsImplicit() {
 
     BiCGSTAB biCGSTAB;
 
     biCGSTAB.compute(matrix);
 
     _concs[iCurr] = biCGSTAB.solveWithGuess(freeVector, _concs[iPrev]);
-
-    time += (double) (clock() - tStart);
 
 }
 
@@ -216,6 +186,24 @@ void Equation::calcConcsExplicit() {
         _concsIni[i] = 20.0;
 }
 
+void Equation::cfdProcedureOneStep(const double &timeStep) {
+
+    std::swap(iCurr, iPrev);
+    _convective->calcBetas(_concs[iPrev]);
+    _local->calcAlphas(_concs[iPrev], timeStep);
+
+    processNonBoundFaces(_sgrid->_typesFaces.at("active_nonbound"));
+    fillMatrix();
+    processDirichCells(_boundGroupsDirich, _concsBoundDirich);
+
+    calcConcsImplicit();
+    // ToDo: move three following lines to cfdProcedure()
+    // Eigen::Map<Eigen::VectorXd> concCurr(new double[dim], dim);
+    // concCurr = _concs[iCurr];
+    // _concsTime.push_back(concCurr);
+
+}
+
 void Equation::cfdProcedure() {
 
     _concs.emplace_back(_sgrid->_cellsArrays.at("concs_array1"));
@@ -223,48 +211,12 @@ void Equation::cfdProcedure() {
 
     _local->calcTimeSteps();
 
-    double calcBetasTime = 0;
-    std::map<std::string, double> fillMatrixTimes;
-    fillMatrixTimes["whole"] = 0;
-    fillMatrixTimes["loop"] = 0;
-    fillMatrixTimes["loopLoop"] = 0;
-    fillMatrixTimes["loopLoopLoop"] = 0;
-    double procesDirichCellsTime = 0;
-    double calcConcsImplicitTime = 0;
-    double totalTime = 0;
-
     for (auto &timeStep : _local->_timeSteps) {
-        clock_t tStart = clock();
-
-        std::swap(iCurr, iPrev);
-        _convective->calcBetas(_concs[iPrev], calcBetasTime);
-        _local->calcAlphas(_concs[iPrev], timeStep);
-
-        processNonBoundFaces(_sgrid->_typesFaces.at("active_nonbound"));
-        fillMatrix(fillMatrixTimes);
-        processDirichCells(_boundGroupsDirich, _concsBoundDirich,
-                           procesDirichCellsTime);
-
-        calcConcsImplicit(calcConcsImplicitTime);
+        cfdProcedureOneStep(timeStep);
         Eigen::Map<Eigen::VectorXd> concCurr(new double[dim], dim);
         concCurr = _concs[iCurr];
         _concsTime.push_back(concCurr);
-
-        totalTime += (double) (clock() - tStart);
-
     }
-    printf("calcBetasTime: %.2fs\n", calcBetasTime / CLOCKS_PER_SEC);
-    for (auto const&[type, time] : fillMatrixTimes) {
-        std::cout << type;
-        printf(": %.2fs\n", time / CLOCKS_PER_SEC);
-    }
-
-
-    printf("procesDirichCellsTime: %.2fs\n",
-           procesDirichCellsTime / CLOCKS_PER_SEC);
-    printf("calcConcsImplicitTime: %.2fs\n",
-           calcConcsImplicitTime / CLOCKS_PER_SEC);
-    printf("totalTime: %.2fs\n", totalTime / CLOCKS_PER_SEC);
 }
 
 double Equation::calcFacesFlowRate(Eigen::Ref<Eigen::VectorXui64> faces) {

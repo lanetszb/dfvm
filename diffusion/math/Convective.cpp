@@ -45,9 +45,7 @@ double Convective::weighing(const std::string &method, const double &value0,
 }
 
 // ToDo: massive of diffusions which are going to be different for matrix and fractures
-void Convective::calcBetas(Eigen::Ref<Eigen::VectorXd> concs, double &time) {
-
-    clock_t tStart = clock();
+void Convective::calcBetas(Eigen::Ref<Eigen::VectorXd> concs) {
 
     auto &neighborsCells = _sgrid->_neighborsCells;
     auto boundFaces = _sgrid->_typesFaces.at("active_bound");
@@ -85,6 +83,4 @@ void Convective::calcBetas(Eigen::Ref<Eigen::VectorXd> concs, double &time) {
         _betas[nonBoundFace] = bCoeff * _sgrid->_facesSs[axis]
                                / _sgrid->_spacing[axis];
     }
-
-    time += (double) (clock() - tStart);
 }

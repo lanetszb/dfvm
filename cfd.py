@@ -57,13 +57,13 @@ sgrid.set_cells_type('active', active_cells)
 sgrid.process_type_by_cells_type('active')
 
 # computation time
-time_period = float(10.)  # sec
+time_period = float(10)  # sec
 # numerical time step
-time_step = float(5.0)  # sec
+time_step = float(1)  # sec
 
 # diffusivity coeffs (specify only b coeff to make free diffusion constant)
-d_coeff_a = float(0.0)  # m2/sec
-d_coeff_b = float(3.E-1)  # m2/sec
+d_coeff_a = float(0)  # m2/sec
+d_coeff_b = float(15.E-3)  # m2/sec
 # porosity of rock
 poro = float(1)
 params = {'time_period': time_period, 'time_step': time_step,
@@ -90,9 +90,29 @@ conc_left = float(20)
 conc_right = float(10)
 equation.concs_bound_dirich = {key_dirichlet_one: conc_left,
                                key_dirichlet_two: conc_right}
-equation.cfd_procedure()
-flow_rate_boundary = equation.calc_faces_flow_rate(boundary_faces)
-print(flow_rate_boundary)
+
+# equation.cfd_procedure()
+
+# CFD procedure
+concs = [concs_array1, concs_array2]
+equation.concs = concs
+
+local.calc_time_steps()
+time_steps = local.time_steps
+concs_time = []
+flow_rate_time = []
+for time_step in time_steps:
+    equation.cfd_procedure_one_step(time_step)
+    conc_curr = copy.deepcopy(equation.concs[equation.i_curr])
+    concs_time.append(conc_curr)
+    flow_rate_boundary = equation.calc_faces_flow_rate(boundary_faces)
+    flow_rate_time.append(flow_rate_boundary)
+    # new Dirichlet boundaries can be input here
+    equation.concs_bound_dirich = {
+        key_dirichlet_one: (conc_left - conc_left * 0.1),
+        key_dirichlet_two: conc_right - conc_left * 0.1}
+equation.concs_time = concs_time
+#
 
 # visualising 'a' and 'b' coefficients
 # set concentration range for visualisation

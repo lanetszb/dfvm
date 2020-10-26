@@ -75,7 +75,7 @@ PYBIND11_MODULE(diffusion_bind, m) {
             .def("weigh_conc", &Convective::weighing, "method"_a,
                  "conc_first"_a, "conc_second"_a)
             .def("calc_betas", &Convective::calcBetas,
-                 "concs"_a, "time"_a)
+                 "concs"_a)
             .def_readwrite("betas", &Convective::_betas);
 
     py::class_<Equation, std::shared_ptr<Equation>>(m, "Equation")
@@ -87,6 +87,8 @@ PYBIND11_MODULE(diffusion_bind, m) {
             .def("fill_matrix", &Equation::fillMatrix)
             .def("calc_concs_implicit", &Equation::calcConcsImplicit)
             .def("calc_concs_explicit", &Equation::calcConcsExplicit)
+            .def("cfd_procedure_one_step", &Equation::cfdProcedureOneStep,
+                    "timeStep"_a)
             .def("cfd_procedure", &Equation::cfdProcedure)
             .def("calc_faces_flow_rate", &Equation::calcFacesFlowRate,
                  "faces"_a)
