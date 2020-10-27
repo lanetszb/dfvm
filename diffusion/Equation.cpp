@@ -49,8 +49,7 @@ Equation::Equation(std::shared_ptr<Props> props,
     for (int i = 0; i < dim; i++)
         triplets.emplace_back(i, i);
 
-    std::vector<std::string> boundGroupsDirich{"left", "right"};
-    for (auto &nonDirichCell: findNonDirichCells(boundGroupsDirich))
+    for (auto &nonDirichCell: findNonDirichCells(_boundGroupsDirich))
         for (auto &face: _sgrid->_neighborsFaces[nonDirichCell])
             for (auto &cell: _sgrid->_neighborsCells[face])
                 triplets.emplace_back(nonDirichCell, cell);
@@ -180,11 +179,7 @@ void Equation::calcConcsImplicit() {
 
 }
 
-void Equation::calcConcsExplicit() {
-
-    for (int i = 0; i < _concsIni.size(); i++)
-        _concsIni[i] = 20.0;
-}
+void Equation::calcConcsExplicit() {}
 
 void Equation::cfdProcedureOneStep(const double &timeStep) {
 
@@ -197,10 +192,6 @@ void Equation::cfdProcedureOneStep(const double &timeStep) {
     processDirichCells(_boundGroupsDirich, _concsBoundDirich);
 
     calcConcsImplicit();
-    // ToDo: move three following lines to cfdProcedure()
-    // Eigen::Map<Eigen::VectorXd> concCurr(new double[dim], dim);
-    // concCurr = _concs[iCurr];
-    // _concsTime.push_back(concCurr);
 
 }
 
@@ -239,7 +230,6 @@ double Equation::calcFacesFlowRate(Eigen::Ref<Eigen::VectorXui64> faces) {
         auto diffusivity1 = _props->calcD(conc_prev1);
 
         auto &axis = _sgrid->_facesAxes[face];
-        // ToDo: consider more general case
         auto diffusivity = _convective->weighing("meanAverage",
                                                  diffusivity0, diffusivity1);
 
@@ -248,9 +238,8 @@ double Equation::calcFacesFlowRate(Eigen::Ref<Eigen::VectorXui64> faces) {
         auto &dS = _sgrid->_facesSs[axis];
         auto &dL = _sgrid->_spacing[axis];
 
-        totalFlowRate -=
-                poro * diffusivity *
-                (norm0 * conc_curr0 + norm1 * conc_curr1) * dS / dL;
+        totalFlowRate -= poro * diffusivity *
+                         (norm0 * conc_curr0 + norm1 * conc_curr1) * dS / dL;
     }
 
     return totalFlowRate;
