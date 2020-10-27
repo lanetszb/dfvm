@@ -75,9 +75,14 @@ key_dirichlet_two = 'right'
 
 props = Props(params)
 boundary = Boundary(props, sgrid)
-boundary_faces = copy.deepcopy(sgrid.types_faces[key_dirichlet_two])
-boundary_faces_axis = sgrid.faces_axes[boundary_faces[0]]
-boundary.shift_boundary_faces(boundary_faces, boundary_faces_axis)
+boundary_faces_one = copy.deepcopy(sgrid.types_faces[key_dirichlet_one])
+boundary_faces_two = copy.deepcopy(sgrid.types_faces[key_dirichlet_two])
+boundary_face_one = sgrid.types_faces[key_dirichlet_one][0]
+boundary_faces_one_axis = sgrid.faces_axes[boundary_face_one]
+boundary_face_two = sgrid.types_faces[key_dirichlet_two][0]
+boundary_faces_two_axis = sgrid.faces_axes[boundary_face_two]
+boundary.shift_boundary_faces(boundary_faces_one, boundary_faces_one_axis)
+boundary.shift_boundary_faces(boundary_faces_two, boundary_faces_two_axis)
 
 local = Local(props, sgrid)
 convective = Convective(props, sgrid)
@@ -100,13 +105,16 @@ equation.concs = concs
 local.calc_time_steps()
 time_steps = local.time_steps
 concs_time = []
-flow_rate_time = []
+flow_rate_one_time = []
+flow_rate_two_time = []
 for time_step in time_steps:
     equation.cfd_procedure_one_step(time_step)
     conc_curr = copy.deepcopy(equation.concs[equation.i_curr])
     concs_time.append(conc_curr)
-    flow_rate_boundary = equation.calc_faces_flow_rate(boundary_faces)
-    flow_rate_time.append(flow_rate_boundary)
+    flow_rate_boundary_one = equation.calc_faces_flow_rate(boundary_faces_one)
+    flow_rate_boundary_two = equation.calc_faces_flow_rate(boundary_faces_two)
+    flow_rate_one_time.append(flow_rate_boundary_one)
+    flow_rate_two_time.append(flow_rate_boundary_two)
     # new Dirichlet boundaries can be input here
     equation.concs_bound_dirich = {
         key_dirichlet_one: (conc_left - conc_left * 0.1),
