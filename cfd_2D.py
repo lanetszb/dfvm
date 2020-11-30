@@ -57,7 +57,7 @@ sgrid.process_type_by_cells_type('active')
 # computation time
 time_period = 900.  # sec
 # numerical time step
-time_step = 90.  # sec
+time_step = 9.  # sec
 
 # diffusivity coeffs (specify only b coeff to make free diffusion constant)
 d_coeff_a = float(0.0)  # m2/sec
@@ -74,11 +74,13 @@ convective = Convective(props, sgrid)
 equation = Equation(props, sgrid, local, convective)
 
 # dirichlet cells (options: left, right, top, bottom, front, back)
-equation.bound_groups_dirich = ['left', 'right']
+# equation.bound_groups_dirich = ['left', 'right']
+equation.bound_groups_dirich = ['active_bound']
 # concentration on dirichlet cells
 conc_left = float(15)
 conc_right = float(20)
-equation.concs_bound_dirich = {'left': conc_left, 'right': conc_right}
+# equation.concs_bound_dirich = {'left': conc_left, 'right': conc_right}
+equation.concs_bound_dirich = {'active_bound': 20.}
 equation.cfd_procedure()
 
 # saving results to paraview
