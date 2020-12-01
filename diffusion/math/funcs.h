@@ -7,6 +7,8 @@
 
 #include <Eigen/Dense>
 
+double calcPoro(const double &conc, const double &poro);
+
 double calcAFunc(const double &conc, const double &poro);
 
 double calcBFunc(const double &conc, const double &diffusion, const double &poro);
