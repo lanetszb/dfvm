@@ -43,7 +43,7 @@ PYBIND11_MODULE(diffusion_bind, m) {
           "poro"_a);
 
     py::class_<Props, std::shared_ptr<Props>>(m, "Props")
-            .def(py::init<const std::map<std::string, std::variant<int, double>> &>(),
+            .def(py::init<const std::map<std::string, std::variant<double, int>> &>(),
                  "params"_a)
 
             .def_readwrite("params", &Props::_params)
@@ -88,7 +88,7 @@ PYBIND11_MODULE(diffusion_bind, m) {
             .def("calc_concs_implicit", &Equation::calcConcsImplicit)
             .def("calc_concs_explicit", &Equation::calcConcsExplicit)
             .def("cfd_procedure_one_step", &Equation::cfdProcedureOneStep,
-                    "timeStep"_a)
+                 "timeStep"_a)
             .def("cfd_procedure", &Equation::cfdProcedure)
             .def("calc_faces_flow_rate", &Equation::calcFacesFlowRate,
                  "faces"_a)

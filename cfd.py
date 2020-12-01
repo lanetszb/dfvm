@@ -36,7 +36,7 @@ from dfvm import plot_x_y
 from sgrid import Sgrid, save_files_collection_to_file
 
 # model geometry
-points_dims = [10, 10, 10]
+points_dims = [5, 5, 2]
 points_origin = [0., 0., 0.]
 spacing = [1., 1., 1.]
 
@@ -46,7 +46,7 @@ points_array = np.random.rand(sgrid.points_N)
 points_arrays = {"points_array": points_array}
 active_cells = np.arange(sgrid.cells_N, dtype=np.uint64)
 # initial concentration
-conc_ini = float(10.0)
+conc_ini = float(0.0)
 concs_array1 = np.tile(conc_ini, sgrid.cells_N)
 concs_array2 = np.tile(conc_ini, sgrid.cells_N)
 concs_arrays = {"concs_array1": concs_array1,
@@ -57,7 +57,7 @@ sgrid.set_cells_type('active', active_cells)
 sgrid.process_type_by_cells_type('active')
 
 # computation time
-time_period = float(10)  # sec
+time_period = float(100)  # sec
 # numerical time step
 time_step = float(1)  # sec
 
@@ -92,7 +92,7 @@ equation = Equation(props, sgrid, local, convective)
 equation.bound_groups_dirich = [key_dirichlet_one, key_dirichlet_two]
 # concentration on dirichlet cells
 conc_left = float(20)
-conc_right = float(10)
+conc_right = float(0)
 equation.concs_bound_dirich = {key_dirichlet_one: conc_left,
                                key_dirichlet_two: conc_right}
 
@@ -105,9 +105,15 @@ equation.concs = concs
 local.calc_time_steps()
 time_steps = local.time_steps
 concs_time = []
+conc_curr = copy.deepcopy(equation.concs[equation.i_curr])
+concs_time.append(conc_curr)
 flow_rate_one_time = []
 flow_rate_two_time = []
 for time_step in time_steps:
+    # modifing porosity
+    params = props.params
+    params['poro'] = 22.
+    props.params = params
     equation.cfd_procedure_one_step(time_step)
     conc_curr = copy.deepcopy(equation.concs[equation.i_curr])
     concs_time.append(conc_curr)
@@ -116,9 +122,7 @@ for time_step in time_steps:
     flow_rate_one_time.append(flow_rate_boundary_one)
     flow_rate_two_time.append(flow_rate_boundary_two)
     # new Dirichlet boundaries can be input here
-    equation.concs_bound_dirich = {
-        key_dirichlet_one: (conc_left - conc_left * 0.1),
-        key_dirichlet_two: conc_right - conc_left * 0.1}
+    equation.concs_bound_dirich = {key_dirichlet_one: conc_left, key_dirichlet_two: conc_right}
 equation.concs_time = concs_time
 #
 
