@@ -57,7 +57,7 @@ sgrid.set_cells_type('active', active_cells)
 sgrid.process_type_by_cells_type('active')
 
 # computation time
-time_period = float(100)  # sec
+time_period = float(1000)  # sec
 # numerical time step
 time_step = float(1)  # sec
 
@@ -65,10 +65,10 @@ time_step = float(1)  # sec
 d_coeff_a = float(0)  # m2/sec
 d_coeff_b = float(15.E-3)  # m2/sec
 # porosity of rock
-poro = float(1)
+poro_ini = float(1)
 params = {'time_period': time_period, 'time_step': time_step,
           'd_coeff_a': d_coeff_a, 'd_coeff_b': d_coeff_b,
-          'poro': poro}
+          'poro': poro_ini}
 
 key_dirichlet_one = 'left'
 key_dirichlet_two = 'right'
@@ -123,7 +123,7 @@ for time_step in time_steps:
 equation.concs_time = concs_time
 #
 
-# visualising 'a' and 'b' coefficients
+# visualising 'a' and 'b' coefficients and porosity
 # set concentration range for visualisation
 a_list = []
 b_list = []
@@ -131,21 +131,31 @@ poro_list = []
 conc_list = []
 for i in range(int(conc_right), int(conc_left)):
     conc_list.append(i)
-    a_list.append(calc_a_func(i, poro))
-    b_list.append(calc_b_func(i, d_coeff_b, poro))
-    poro_list.append(calc_poro(i, poro))
+    a_list.append(calc_a_func(i, poro_ini))
+    b_list.append(calc_b_func(i, d_coeff_b, poro_ini))
+    poro_list.append(calc_poro(i, poro_ini))
 
-# plotting the dependence of 'a' and 'b' coefficients on free concentration
+# plotting the dependence of 'a' and 'b' coefficients and porosity on free concentration
 fig, axs = plt.subplots(3, sharex=True)
 plot_x_y(axs[0], conc_list, a_list, 'concentration', 'coeff a', '-',
          color='green')
 plot_x_y(axs[1], conc_list, b_list, 'concentration', 'coeff b', '-',
          color='blue')
-plot_x_y(axs[2], conc_list, b_list, 'concentration', 'poro', '-',
+plot_x_y(axs[2], conc_list, poro_list, 'concentration', 'poro', '-',
          color='red')
 axs[0].legend('a', loc="best")
 axs[1].legend('b', loc="best")
 axs[2].legend(['poro'], loc="best")
+
+# plotting inlet and outlet flow rates vs time
+time = np.cumsum(np.array(time_steps))
+fig1, ax1 = plt.subplots()
+plot_x_y(ax1, time, flow_rate_one_time, 'time', 'G, kg/sec', '-',
+         color='green')
+plot_x_y(ax1, time, flow_rate_two_time, 'time', 'G, kg/sec', '-',
+         color='blue')
+ax1.legend(['$Q_{in}$', '$Q_{out}$'], loc="best")
+
 
 # saving results to paraview
 

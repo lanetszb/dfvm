@@ -50,7 +50,7 @@ void Convective::calcBetas(Eigen::Ref<Eigen::VectorXd> concs) {
     auto &neighborsCells = _sgrid->_neighborsCells;
     auto boundFaces = _sgrid->_typesFaces.at("active_bound");
     auto nonBoundFaces = _sgrid->_typesFaces.at("active_nonbound");
-    auto poro = std::get<double>(_props->_params["poro"]);
+    auto poroIni = std::get<double>(_props->_params["poro"]);
 
     for (int i = 0; i < boundFaces.size(); i++) {
         auto boundFace = boundFaces[i];
@@ -58,7 +58,7 @@ void Convective::calcBetas(Eigen::Ref<Eigen::VectorXd> concs) {
         auto &conc0 = concs(faceNeighborsCell[0]);
 
         auto diffusivity0 = _props->calcD(conc0);
-        auto bCoeff = calcBFunc(conc0, diffusivity0, poro);
+        auto bCoeff = calcBFunc(conc0, diffusivity0, poroIni);
 
         auto &axis = _sgrid->_facesAxes[boundFace];
 
@@ -74,8 +74,8 @@ void Convective::calcBetas(Eigen::Ref<Eigen::VectorXd> concs) {
 
         auto diffusivity0 = _props->calcD(conc0);
         auto diffusivity1 = _props->calcD(conc1);
-        auto bCoeff0 = calcBFunc(conc0, diffusivity0, poro);
-        auto bCoeff1 = calcBFunc(conc1, diffusivity1, poro);
+        auto bCoeff0 = calcBFunc(conc0, diffusivity0, poroIni);
+        auto bCoeff1 = calcBFunc(conc1, diffusivity1, poroIni);
 
         auto bCoeff = weighing("meanAverage", bCoeff0, bCoeff1);
         auto &axis = _sgrid->_facesAxes[nonBoundFace];

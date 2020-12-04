@@ -11,6 +11,6 @@ double calcAFunc(const double &conc, const double &poro) {
 }
 
 double calcBFunc(const double &conc, const double &diffusivity, const double &poro) {
-    return poro * diffusivity;
+    return calcPoro(conc, poro) * diffusivity;
 }
 

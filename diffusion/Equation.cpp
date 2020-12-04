@@ -27,6 +27,7 @@
 #include <algorithm>
 #include <iterator>
 #include <numeric>
+#include "math/funcs.h"
 
 Equation::Equation(std::shared_ptr<Props> props,
                    std::shared_ptr<Sgrid> sgrid,
@@ -212,7 +213,7 @@ void Equation::cfdProcedure() {
 
 double Equation::calcFacesFlowRate(Eigen::Ref<Eigen::VectorXui64> faces) {
 
-    auto &poro = std::get<double>(_props->_params["poro"]);
+    auto &poroIni = std::get<double>(_props->_params["poro"]);
 
     double totalFlowRate = 0;
     for (uint64_t i = 0; i < faces.size(); i++) {
@@ -235,10 +236,12 @@ double Equation::calcFacesFlowRate(Eigen::Ref<Eigen::VectorXui64> faces) {
 
         auto &conc_curr0 = _concs[iCurr](neighborsCells[0]);
         auto &conc_curr1 = _concs[iCurr](neighborsCells[1]);
+        auto conc = _convective->weighing("meanAverage",
+                                          conc_curr0, conc_curr1);
         auto &dS = _sgrid->_facesSs[axis];
         auto &dL = _sgrid->_spacing[axis];
 
-        totalFlowRate -= poro * diffusivity *
+        totalFlowRate -= calcPoro(conc, poroIni) * diffusivity *
                          (norm0 * conc_curr0 + norm1 * conc_curr1) * dS / dL;
     }
 
