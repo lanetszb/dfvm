@@ -31,7 +31,7 @@ current_path = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(current_path, '../'))
 
 from dfvm import Props, Boundary, Local, Convective, Equation
-from dfvm import calc_a_func, calc_b_func
+from dfvm import calc_a_func, calc_b_func, calc_poro
 from dfvm import plot_x_y
 from sgrid import Sgrid, save_files_collection_to_file
 
@@ -111,9 +111,6 @@ flow_rate_one_time = []
 flow_rate_two_time = []
 for time_step in time_steps:
     # modifing porosity
-    params = props.params
-    params['poro'] = 22.
-    props.params = params
     equation.cfd_procedure_one_step(time_step)
     conc_curr = copy.deepcopy(equation.concs[equation.i_curr])
     concs_time.append(conc_curr)
@@ -128,25 +125,27 @@ equation.concs_time = concs_time
 
 # visualising 'a' and 'b' coefficients
 # set concentration range for visualisation
-conc_min = 0
-conc_max = 20
+a_list = []
+b_list = []
+poro_list = []
+conc_list = []
+for i in range(int(conc_right), int(conc_left)):
+    conc_list.append(i)
+    a_list.append(calc_a_func(i, poro))
+    b_list.append(calc_b_func(i, d_coeff_b, poro))
+    poro_list.append(calc_poro(i, poro))
 
-# a_list = []
-# b_list = []
-# conc_list = []
-# for i in range(conc_min, conc_max):
-#     conc_list.append(i)
-#     a_list.append(calc_a_func(i, poro))
-#     b_list.append(calc_b_func(i, d_coeff_b, poro))
-#
-# # plotting the dependence of 'a' and 'b' coefficients on free concentration
-# fig, axs = plt.subplots(2, sharex=True)
-# plot_x_y(axs[0], conc_list, a_list, 'concentration', 'coeff a', '-',
-#          color='green')
-# plot_x_y(axs[1], conc_list, b_list, 'concentration', 'coeff b', '-',
-#          color='blue')
-# axs[0].legend('a', loc="best")
-# axs[1].legend('b', loc="best")
+# plotting the dependence of 'a' and 'b' coefficients on free concentration
+fig, axs = plt.subplots(3, sharex=True)
+plot_x_y(axs[0], conc_list, a_list, 'concentration', 'coeff a', '-',
+         color='green')
+plot_x_y(axs[1], conc_list, b_list, 'concentration', 'coeff b', '-',
+         color='blue')
+plot_x_y(axs[2], conc_list, b_list, 'concentration', 'poro', '-',
+         color='red')
+axs[0].legend('a', loc="best")
+axs[1].legend('b', loc="best")
+axs[2].legend(['poro'], loc="best")
 
 # saving results to paraview
 

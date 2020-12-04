@@ -38,6 +38,7 @@ using namespace pybind11::literals;
 
 PYBIND11_MODULE(diffusion_bind, m) {
 
+    m.def("calc_poro", calcPoro, "conc"_a, "poro"_a);
     m.def("calc_a_func", calcAFunc, "conc"_a, "poro"_a);
     m.def("calc_b_func", calcBFunc, "conc"_a, "diffusivity"_a,
           "poro"_a);
