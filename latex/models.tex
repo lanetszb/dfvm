@@ -277,16 +277,16 @@ a_{s} = \left(\mathit{1}-\phi\right), \; b_{si} = \left(\mathit{1}-\phi\right) D
 = -\int \limits_{V} \left(J_{j}+\frac{\rho_j}{\rho_i}J_{i}\right) \; dV.
 \end{eqnarray}
 
-\subsection*{Single-phase two-component (Langmuir \& Fick)}
+\subsection*{Single-phase two-component (Langmuir \& Fick \& Darcy)}
 Gas-coalbed system consists of the following mass balances for any component in the micro- and macropores:
 
 \begin{eqnarray}
 \begin{gathered}
 \label{eq:langm_fick_diffusivity_differential}
-\phi\frac{\partial C_{fi}}{\partial t} + \left(\mathit{1}-\phi\right)\frac{\partial C_{si}}{\partial t} - \vec{\nabla} \phi D_{fi} \vec{\nabla}C_{fi} - \vec{\nabla}\left(\mathit{1}-\phi \right) D_{si} \vec{\nabla}C_{si} =  \mathit{0},
+\phi\frac{\partial C_{fi}}{\partial t} + \left(\mathit{1}-\phi\right)\frac{\partial C_{si}}{\partial t} = \\ \vec{\nabla} \phi\frac{RTk}{\mu} \vec{\nabla}C_{fi} + \vec{\nabla} \phi D_{fi} \vec{\nabla}C_{fi} + \vec{\nabla}\left(\mathit{1}-\phi \right) D_{si} \vec{\nabla}C_{si},
 \end{gathered}
 \end{eqnarray}
-where $i$ - index of  a particular component, $C_{fi}$~--~total free gas concentration, $\phi$~--~is total porosity, $C_{si}$~--~adsorbed concentration, $D_{fi}$~--~effective molecular pore diffusion coefficient, $D_{si}$~--~surface molecular diffusion coefficient.
+where $i$ - index of  a particular component, $C_{fi}$~--~total free gas concentration, $\phi$~--~is total porosity, $C_{si}$~--~adsorbed concentration, $R$~--~universal gas constant,$T$~--~absolute temperature, $k$~--~absolute permeability, $\mu$~--~dynamic viscosity, $D_{fi}$~--~effective molecular pore diffusion coefficient, $D_{si}$~--~surface molecular diffusion coefficient.
 
 Using Eqs. (\ref{eq:langm_only_chain_rule_timeder}), (\ref{eq:langm_only_adsorbed_conc}) and (\ref{eq:langm_only_adsorbed_conc_deriv}) and by knowing that
 
@@ -304,7 +304,7 @@ where
 \begin{gathered}
 \label{eq:langm_fick_diffusivity_a_b_coeffs}
 a_{i}  =  \phi + \left(\mathit{1}-\phi \right)C_{si}', \\ 
-b_{i}  = \phi D_{fi} + \left(\mathit{1}-\phi \right) C_{si}'D_{si},
+b_{i}  = \phi \left(C_{fi} \frac{RTk}{\mu} + D_{fi}\right) + \left(\mathit{1}-\phi \right) C_{si}'D_{si},
 \end{gathered}
 \end{eqnarray}
 
