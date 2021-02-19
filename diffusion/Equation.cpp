@@ -214,14 +214,18 @@ void Equation::cfdProcedure() {
 double Equation::calcFacesFlowRate(Eigen::Ref<Eigen::VectorXui64> faces) {
 
     auto &poroIni = std::get<double>(_props->_params["poro"]);
+    auto &isMatrix = _sgrid->_cellsConditions.at("is_matrices");
 
     double totalFlowRate = 0;
     for (uint64_t i = 0; i < faces.size(); i++) {
         auto &face = faces[i];
 
         auto &neighborsCells = _sgrid->_neighborsCells[face];
-        auto &conc_prev0 = _concs[iPrev](neighborsCells[0]);
-        auto &conc_prev1 = _concs[iPrev](neighborsCells[1]);
+        auto &cell0 = neighborsCells[0];
+        auto &cell1 = neighborsCells[1];
+
+        auto &conc_prev0 = _concs[iPrev](cell0);
+        auto &conc_prev1 = _concs[iPrev](cell1);
 
         auto &normalsNeighborsCells = _sgrid->_normalsNeighborsCells[face];
         auto &norm0 = normalsNeighborsCells[0];
@@ -234,15 +238,17 @@ double Equation::calcFacesFlowRate(Eigen::Ref<Eigen::VectorXui64> faces) {
         auto diffusivity = _convective->weighing("meanAverage",
                                                  diffusivity0, diffusivity1);
 
-        auto &conc_curr0 = _concs[iCurr](neighborsCells[0]);
-        auto &conc_curr1 = _concs[iCurr](neighborsCells[1]);
-        auto conc = _convective->weighing("meanAverage",
-                                          conc_curr0, conc_curr1);
+        auto &conc_curr0 = _concs[iCurr](cell0);
+        auto &conc_curr1 = _concs[iCurr](cell1);
+
+        auto poro0 = calcPoro(conc_prev0, poroIni, isMatrix[cell0]);
+        auto poro1 = calcPoro(conc_prev1, poroIni, isMatrix[cell1]);
+
         auto &dS = _sgrid->_facesSs[axis];
         auto &dL = _sgrid->_spacing[axis];
 
-        totalFlowRate -= calcPoro(conc, poroIni) * diffusivity *
-                         (norm0 * conc_curr0 + norm1 * conc_curr1) * dS / dL;
+        totalFlowRate -=
+                diffusivity * (norm0 * poro0 * conc_curr0 + norm1 * poro1 * conc_curr1) * dS / dL;
     }
 
     return totalFlowRate;

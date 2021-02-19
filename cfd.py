@@ -25,6 +25,8 @@ import sys
 import os
 import numpy as np
 import copy
+import progressbar
+from time import sleep
 import matplotlib.pyplot as plt
 
 current_path = os.path.dirname(os.path.abspath(__file__))
@@ -36,7 +38,7 @@ from dfvm import plot_x_y
 from sgrid import Sgrid, save_files_collection_to_file
 
 # model geometry
-points_dims = [5, 5, 2]
+points_dims = [201, 201, 2]
 points_origin = [0., 0., 0.]
 spacing = [1., 1., 1.]
 
@@ -56,14 +58,19 @@ sgrid.cells_arrays = concs_arrays
 sgrid.set_cells_type('active', active_cells)
 sgrid.process_type_by_cells_type('active')
 
+# is_matrices = np.random.randint(2, size=sgrid.points_N, dtype=np.bool)
+is_matrices = np.load('inOut/image_frac.npy').ravel().astype('bool')
+cells_conditions = {'is_matrices': is_matrices}
+sgrid.cells_conditions = cells_conditions
+
 # computation time
-time_period = float(1000)  # sec
+time_period = float(5000)  # sec
 # numerical time step
-time_step = float(1)  # sec
+time_step = float(10)  # sec
 
 # diffusivity coeffs (specify only b coeff to make free diffusion constant)
 d_coeff_a = float(0)  # m2/sec
-d_coeff_b = float(15.E-3)  # m2/sec
+d_coeff_b = float(1.E+1)  # m2/sec
 # porosity of rock
 poro_ini = float(1)
 params = {'time_period': time_period, 'time_step': time_step,
@@ -109,6 +116,11 @@ conc_curr = copy.deepcopy(equation.concs[equation.i_curr])
 concs_time.append(conc_curr)
 flow_rate_one_time = []
 flow_rate_two_time = []
+
+bar = progressbar.ProgressBar(maxval=len(time_steps), widgets=[progressbar.Bar(),
+                                                               progressbar.Percentage()])
+bar.start()
+iterator = 0
 for time_step in time_steps:
     # modifing porosity
     equation.cfd_procedure_one_step(time_step)
@@ -120,6 +132,9 @@ for time_step in time_steps:
     flow_rate_two_time.append(flow_rate_boundary_two)
     # new Dirichlet boundaries can be input here
     equation.concs_bound_dirich = {key_dirichlet_one: conc_left, key_dirichlet_two: conc_right}
+
+    bar.update(iterator + 1)
+    iterator += 1
 equation.concs_time = concs_time
 #
 
@@ -131,9 +146,9 @@ poro_list = []
 conc_list = []
 for i in range(int(conc_right), int(conc_left)):
     conc_list.append(i)
-    a_list.append(calc_a_func(i, poro_ini))
-    b_list.append(calc_b_func(i, d_coeff_b, poro_ini))
-    poro_list.append(calc_poro(i, poro_ini))
+    a_list.append(calc_a_func(i, poro_ini, True))
+    b_list.append(calc_b_func(i, d_coeff_b, poro_ini, True))
+    poro_list.append(calc_poro(i, poro_ini, True))
 
 # plotting the dependence of 'a' and 'b' coefficients and porosity on free concentration
 fig, axs = plt.subplots(3, sharex=True)

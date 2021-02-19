@@ -50,7 +50,7 @@ void Local::calcAlphas(Eigen::Ref<Eigen::VectorXd> concs,
     auto poroIni = std::get<double>(_props->_params["poro"]);
 
     for (int i = 0; i < _alphas.size(); i++) {
-        auto aCoeff = calcAFunc(concs[i], poroIni);
+        auto aCoeff = calcAFunc(concs[i], poroIni, 1.);
         _alphas[i] = aCoeff * _sgrid->_cellV / timeStep;
     }
 }

@@ -7,11 +7,12 @@
 
 #include <Eigen/Dense>
 
-double calcPoro(const double &conc, const double &poro);
+double calcPoro(const double &conc, const double &poro, const bool &isMatrix);
 
-double calcAFunc(const double &conc, const double &poro);
+double calcAFunc(const double &conc, const double &poro, const bool &isMatrix);
 
-double calcBFunc(const double &conc, const double &diffusion, const double &poro);
+double calcBFunc(const double &conc, const double &diffusivity,
+                 const double &poro, const bool &isMatrix);
 
 
 #endif //DFVM_FUNCS_H
