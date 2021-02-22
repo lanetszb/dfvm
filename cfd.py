@@ -64,7 +64,7 @@ cells_conditions = {'is_matrices': is_matrices}
 sgrid.cells_conditions = cells_conditions
 
 # computation time
-time_period = float(5000)  # sec
+time_period = float(500)  # sec
 # numerical time step
 time_step = float(10)  # sec
 
@@ -111,21 +111,35 @@ equation.concs = concs
 
 local.calc_time_steps()
 time_steps = local.time_steps
-concs_time = []
-conc_curr = copy.deepcopy(equation.concs[equation.i_curr])
-concs_time.append(conc_curr)
+
 flow_rate_one_time = []
 flow_rate_two_time = []
 
 bar = progressbar.ProgressBar(maxval=len(time_steps), widgets=[progressbar.Bar(),
                                                                progressbar.Percentage()])
 bar.start()
-iterator = 0
+
+#################
+# Paraview output
+#################
+os.system('rm -r inOut/*.vtu')
+os.system('rm -r inOut/*.pvd')
+concs_dict = dict()
+file_name = 'inOut/collection.pvd'
+files_names = list()
+files_descriptions = list()
+
+sgrid.cells_arrays = {'conc_i': equation.concs[equation.i_curr]}
+files_names.append(str(0) + '.vtu')
+files_descriptions.append(str(0))
+sgrid.save_cells('inOut/' + files_names[-1])
+save_files_collection_to_file(file_name, files_names, files_descriptions)
+
+it = 0
 for time_step in time_steps:
     # modifing porosity
     equation.cfd_procedure_one_step(time_step)
     conc_curr = copy.deepcopy(equation.concs[equation.i_curr])
-    concs_time.append(conc_curr)
     flow_rate_boundary_one = equation.calc_faces_flow_rate(boundary_faces_one)
     flow_rate_boundary_two = equation.calc_faces_flow_rate(boundary_faces_two)
     flow_rate_one_time.append(flow_rate_boundary_one)
@@ -133,11 +147,15 @@ for time_step in time_steps:
     # new Dirichlet boundaries can be input here
     equation.concs_bound_dirich = {key_dirichlet_one: conc_left, key_dirichlet_two: conc_right}
 
-    bar.update(iterator + 1)
-    iterator += 1
-equation.concs_time = concs_time
-#
+    bar.update(it + 1)
 
+    sgrid.cells_arrays = {'conc_i': equation.concs[equation.i_curr]}
+    files_names.append(str(it+1) + '.vtu')
+    files_descriptions.append(str(it+1))
+    sgrid.save_cells('inOut/' + files_names[-1])
+    save_files_collection_to_file(file_name, files_names, files_descriptions)
+
+    it += 1
 # visualising 'a' and 'b' coefficients and porosity
 # set concentration range for visualisation
 a_list = []
@@ -170,20 +188,3 @@ plot_x_y(ax1, time, flow_rate_one_time, 'time', 'G, kg/sec', '-',
 plot_x_y(ax1, time, flow_rate_two_time, 'time', 'G, kg/sec', '-',
          color='blue')
 ax1.legend(['$Q_{in}$', '$Q_{out}$'], loc="best")
-
-
-# saving results to paraview
-
-os.system('rm -r inOut/*.vtu')
-os.system('rm -r inOut/*.pvd')
-concs_dict = dict()
-file_name = 'inOut/collection.pvd'
-files_names = list()
-files_descriptions = list()
-for i in range(len(local.time_steps)):
-    sgrid.cells_arrays = {'conc_i': equation.concs_time[i]}
-    files_names.append(str(i) + '.vtu')
-    files_descriptions.append(str(i))
-    sgrid.save_cells('inOut/' + files_names[i])
-
-save_files_collection_to_file(file_name, files_names, files_descriptions)
