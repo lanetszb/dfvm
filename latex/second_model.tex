@@ -1,0 +1,83 @@
+\subsection*{Two-phase two-component (Langmuir \& Fick)}
+Gas-coalbed system consists of the following mass balances for one of the components in the micro- and macropores:
+\begin{eqnarray}
+\begin{gathered}
+\label{eq:multiphase_free_diffusivity_differential}
+\phi \frac{\partial C_{fi}}{\partial t}  - \vec{\nabla} \phi D_{fi} \vec{\nabla}C_{fi} = J_i,
+\end{gathered}
+\end{eqnarray}
+
+\begin{eqnarray}
+\begin{gathered}
+\label{eq:multiphase_adsorbed_diffusivity_differential}
+\left(\mathit{1}-\phi\right) \frac{\partial C_{si}}{\partial t}  - \vec{\nabla} \left(\mathit{1}-\phi\right) D_{si} \vec{\nabla}C_{si} = -J_i,
+\end{gathered}
+\end{eqnarray}
+
+where $J=J\left(C_{fi}, C_{fj}, C_{si} \right)$~--~source term calculated using the Langmuir equation (\ref{eq:langm_only_adsorbed_conc_i}).
+
+\begin{eqnarray}
+\begin{gathered}
+\label{eq:multiphase_free_diffusivity_integral}
+\int \limits_{V} \phi \frac{\partial C_{fi}}{\partial t} dV  - \oint \limits_{S} \phi D_{fi} \vec{\nabla}C_{fi} \; \vec{dS} = \int \limits_{V} J_i \; dV,
+\end{gathered}
+\end{eqnarray}
+
+\begin{eqnarray}
+\begin{gathered}
+\label{eq:multiphase_adsorbed_diffusivity_integral}
+\int \limits_{V} \left(\mathit{1}-\phi\right) \frac{\partial C_{si}}{\partial t} dV - \oint \limits_{S} \left(\mathit{1}-\phi\right) D_{si} \vec{\nabla}C_{si} \; \vec{dS} = -\int \limits_{V}J_i \; dV,
+\end{gathered}
+\end{eqnarray}
+
+both Eqs. (\ref{eq:multiphase_free_diffusivity_integral}) and (\ref{eq:multiphase_adsorbed_diffusivity_integral}) can be presented in the following forms:
+
+\begin{eqnarray}
+\label{eq:multiphase_diffusivity_simplified_integral_1}
+\int \limits_{V} a_{f} \frac{\partial C_{fi}}{\partial t} dV - \oint \limits_{S} b_{fi} \vec{\nabla}C_{fi} \; \vec{dS} = \int \limits_{V} J_{i} \; dV,
+\end{eqnarray}
+\begin{eqnarray}
+\label{eq:multiphase_diffusivity_simplified_integral_2}
+\int \limits_{V} a_{s} \frac{\partial C_{si}}{\partial t} dV - \oint \limits_{S} b_{si} \vec{\nabla}C_{si} \; \vec{dS} = -\int \limits_{V} J_{i} \; dV,
+\end{eqnarray}
+
+\begin{eqnarray}
+\label{eq:multiphase_diffusivity_densities}
+b_{fi}, b_{fj}, J_{i}, J_{j} \mid (\ref{eq:free_concentration_constaints}) \; \text{and} \; (\ref{eq:free_densities_concentration}),
+\end{eqnarray}
+where
+\begin{eqnarray}
+\label{eq:multiphase_diffusivity_a_b_coeffs_free}
+\begin{gathered}
+a_{f} = \phi, \; b_{fi} = \phi D_{fi},
+\end{gathered}
+\end{eqnarray}
+\begin{eqnarray}
+\label{eq:multiphase_diffusivity_a_b_coeffs_adsorbed}
+\begin{gathered}
+a_{s} = \left(\mathit{1}-\phi\right), \; b_{si} = \left(\mathit{1}-\phi\right) D_{si}.
+\end{gathered}
+\end{eqnarray}
+
+\begin{eqnarray}
+\label{eq:multiphase_diffusivity_simplified_integral_3}
+\int \limits_{V} a_{f} \frac{\partial C_{fj}}{\partial t} dV - \oint \limits_{S} b_{fj} \vec{\nabla}C_{fj} \; \vec{dS} = \int \limits_{V} J_{j} \; dV,
+\end{eqnarray}
+\begin{eqnarray}
+\label{eq:multiphase_diffusivity_simplified_integral_4}
+\int \limits_{V} a_{f} \frac{\partial C_{fj}}{\partial t} dV - \oint \limits_{S} b_{fi} \vec{\nabla}C_{fj} \; \vec{dS} = -\int \limits_{V} \frac{\rho_j}{\rho_i}J_{i} \; dV,
+\end{eqnarray}
+
+\begin{eqnarray}
+\label{eq:multiphase_diffusivity_simplified_integral_5}
+\oint \limits_{S} b_{fj} \vec{\nabla}C_{fj} \vec{dS}
++ \int \limits_{V} J_{j} \; dV
+= \oint \limits_{S} b_{fi} \vec{\nabla}C_{fj} \vec{dS}
+-\int \limits_{V} \frac{\rho_j}{\rho_i}J_{i} \; dV,
+\end{eqnarray}
+
+\begin{eqnarray}
+\label{eq:multiphase_diffusivity_simplified_integral_6}
+\oint \limits_{S} \left(b_{fj}-b_{fi}\right) \vec{\nabla}C_{fj} \vec{dS}
+= -\int \limits_{V} \left(J_{j}+\frac{\rho_j}{\rho_i}J_{i}\right) \; dV.
+\end{eqnarray}

@@ -1,0 +1,34 @@
+ \subsection*{Single-phase two-component (Langmuir only)}
+Gas-coalbed system consists of the following mass balances for any component in the micro- and macropores:
+
+\begin{eqnarray}
+\begin{gathered}
+\label{eq:langm_only_free_diffusivity_differential}
+\frac{\partial C_{fi}}{\partial t} - \vec{\nabla} D_{fi} \vec{\nabla}C_{fi} = J,
+\end{gathered}
+\end{eqnarray}
+
+\begin{eqnarray}
+\begin{gathered}
+\label{eq:langm_only_adsorbed_diffusivity_differential}
+\frac{\partial C_{fi}}{\partial t} - \vec{\nabla} D_{fi} \vec{\nabla}C_{fi} = - \frac{\mathit{1} - \phi}{\phi} \frac{\partial C_{si}}{\partial t}.
+\end{gathered}
+\end{eqnarray}
+
+Knowing (\ref{eq:langm_only_chain_rule_timeder_i}) and by applying the divergence theorem, the following equation can be obtained
+\begin{eqnarray}
+\label{eq:langm_only_diffusivity_simplified_integral}
+\int \limits_{V} a_{i} \frac{\partial C_{fi}}{\partial t} dV - \oint \limits_{S} b_{i} \vec{\nabla}C_{fi} \; \vec{dS} = \mathit{0},
+\end{eqnarray}
+where
+\begin{eqnarray}
+\begin{gathered}
+\label{eq:langm_only_diffusivity_a_b_coeffs}
+a_{i}  =  \mathit{1}+\frac{\mathit{1} - \phi}{\phi}C_{si}', \: b_{i}  = D_{i},
+\end{gathered}
+\end{eqnarray}
+The following constraints must be satisfied during the simulation
+\begin{eqnarray}
+\label{eq:a_b_langm_only_concentration_constaints}
+a_{i}, b_{i} \mid (\ref{eq:free_concentration_constaints}) \; \text{and} \; (\ref{eq:free_densities_concentration}).
+\end{eqnarray}

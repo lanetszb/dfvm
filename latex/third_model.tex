@@ -1,0 +1,30 @@
+\subsection*{Single-phase two-component (Langmuir \& Fick \& Darcy)}
+Gas-coalbed system consists of the following mass balances for any component in the micro- and macropores:
+
+\begin{eqnarray}
+\begin{gathered}
+\label{eq:langm_fick_diffusivity_differential}
+\phi\frac{\partial C_{fi}}{\partial t} + \left(\mathit{1}-\phi\right)\frac{\partial C_{si}}{\partial t} = \\ \vec{\nabla} \phi\frac{RTk}{\mu} \vec{\nabla}C_{fi} + \vec{\nabla} \phi D_{fi} \vec{\nabla}C_{fi} + \vec{\nabla}\left(\mathit{1}-\phi \right) D_{si} \vec{\nabla}C_{si},
+\end{gathered}
+\end{eqnarray}
+where $\phi$~--~is total porosity, $R$~--~universal gas constant,$T$~--~absolute temperature, $k$~--~absolute permeability, $\mu$~--~dynamic viscosity.
+
+Using Eqs. (\ref{eq:langm_only_chain_rule_timeder_i}), (\ref{eq:langm_only_adsorbed_conc_i}) and (\ref{eq:langm_only_adsorbed_conc_i_deriv}) and by knowing (\ref{eq:langm_fick_chain_rule_spaceder_i}) we can apply the divergence theorem and obtain the following equation:
+\begin{eqnarray}
+\label{eq:langm_fick_diffusivity_simplified_integral}
+\int \limits_{V} a_{i} \frac{\partial C_{fi}}{\partial t} d V - \oint \limits_{S} b_{i} \vec{\nabla}C_{fi} \; \vec{dS} =  \mathit{0},
+\end{eqnarray}
+where  
+\begin{eqnarray}
+\begin{gathered}
+\label{eq:langm_fick_diffusivity_a_b_coeffs}
+a_{i}  =  \phi + \left(\mathit{1}-\phi \right)C_{si}', \\ 
+b_{i}  = \phi \left(C_{fi} \frac{RTk}{\mu} + D_{fi}\right) + \left(\mathit{1}-\phi \right) C_{si}'D_{si},
+\end{gathered}
+\end{eqnarray}
+
+The following constraints must be satisfied during the simulation
+\begin{eqnarray}
+\label{eq:angm_fick_concentration_constaints}
+a_{i}, b_{i} \mid  (\ref{eq:free_concentration_constaints}) \; \text{and} \; (\ref{eq:free_densities_concentration}).
+\end{eqnarray}
