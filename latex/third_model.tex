@@ -28,3 +28,18 @@ The following constraints must be satisfied during the simulation
 \label{eq:angm_fick_concentration_constaints}
 a_{i}, b_{i} \mid  (\ref{eq:free_concentration_constaints}) \; \text{and} \; (\ref{eq:free_densities_concentration}).
 \end{eqnarray}
+
+Effective diffusivity can be defined as follows:
+\begin{eqnarray}
+	\label{eq:effective_diffusivity_LFD}
+	\bar{D} = D_{fi} =D_{si}.
+\end{eqnarray}
+
+Whereas particular effective diffusivity should satisfy the simple condition:
+\begin{eqnarray}
+	\begin{gathered}
+		\label{eq:effective_diffusivity_condition_LFD}
+		G_{fi}\left(\bar{D} ,\bar{D}\right) = G_{fi}\left(D_{fi}, D_{si} \right),
+	\end{gathered}
+\end{eqnarray}
+where $D_{fi}$, $D_{si}$ are arbitrary. 

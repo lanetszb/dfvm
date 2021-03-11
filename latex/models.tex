@@ -195,16 +195,18 @@ where $D_{s}$~--~molecular surface diffusion coefficient,
 Effective diffusivity can be defined as follows:
 \begin{eqnarray}
 	\label{eq:effective_diffusivity}
-\bar{D} = D_{fi} =D_{fj} =D_{si} =D_{sj},
+\bar{D} = D_{fi} =D_{fj} =D_{si} =D_{sj}.
 \end{eqnarray}
-where its particular value should satisfy the simple condition:
+
+Whereas particular effective diffusivity should satisfy the simple condition:
 \begin{eqnarray}
 	\begin{gathered}
 	\label{eq:effective_diffusivity_condition}
 	G_{fi}\left(\bar{D} \right) + G_{fj}\left(\bar{D} \right)  + G_{si}\left(\bar{D} \right)  + G_{sj}\left(\bar{D} \right) = \\
-	G_{fi}\left(D_{fi} \right) + G_{fj}\left(D_{fi} \right)  + G_{si}\left(D_{si}\right)  + G_{sj}\left(D_{sj} \right).
+	G_{fi}\left(D_{fi} \right) + G_{fj}\left(D_{fj} \right)  + G_{si}\left(D_{si}\right)  + G_{sj}\left(D_{sj} \right).
 	\end{gathered}
 \end{eqnarray}
+where $D_{fi}$, $D_{fj}$, $D_{si}$, $D_{sj}$ are arbitrary. 
 
 \include{first_model}
 
