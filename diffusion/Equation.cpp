@@ -231,8 +231,8 @@ double Equation::calcFacesFlowRate(Eigen::Ref<Eigen::VectorXui64> faces) {
         auto &norm0 = normalsNeighborsCells[0];
         auto &norm1 = normalsNeighborsCells[1];
 
-        auto diffusivity0 = _props->calcD(conc_prev0);
-        auto diffusivity1 = _props->calcD(conc_prev1);
+        auto diffusivity0 = _props->calcD(isMatrix[cell0]);
+        auto diffusivity1 = _props->calcD(isMatrix[cell1]);
 
         auto &axis = _sgrid->_facesAxes[face];
         auto diffusivity = _convective->weighing("meanAverage",

@@ -48,7 +48,7 @@ points_array = np.random.rand(sgrid.points_N)
 points_arrays = {"points_array": points_array}
 active_cells = np.arange(sgrid.cells_N, dtype=np.uint64)
 # initial concentration
-conc_ini = float(0.0)
+conc_ini = float(0)
 concs_array1 = np.tile(conc_ini, sgrid.cells_N)
 concs_array2 = np.tile(conc_ini, sgrid.cells_N)
 concs_arrays = {"concs_array1": concs_array1,
@@ -64,18 +64,19 @@ cells_conditions = {'is_matrices': is_matrices}
 sgrid.cells_conditions = cells_conditions
 
 # computation time
-time_period = float(500)  # sec
+time_period = float(2000)  # sec
 # numerical time step
 time_step = float(10)  # sec
 
 # diffusivity coeffs (specify only b coeff to make free diffusion constant)
-d_coeff_a = float(0)  # m2/sec
-d_coeff_b = float(1.E+1)  # m2/sec
+d_free_frac = float(1.E+1)  # m2/sec
+d_free_matrix = float(1.)  # m2/sec
+d_surf_matrix = float(1.)
 # porosity of rock
 poro_ini = float(1)
 params = {'time_period': time_period, 'time_step': time_step,
-          'd_coeff_a': d_coeff_a, 'd_coeff_b': d_coeff_b,
-          'poro': poro_ini}
+          'd_free_frac': d_free_frac, 'd_free_matrix': d_free_matrix,
+          'd_surf_matrix': d_surf_matrix, 'poro': poro_ini}
 
 key_dirichlet_one = 'left'
 key_dirichlet_two = 'right'
@@ -150,8 +151,8 @@ for time_step in time_steps:
     bar.update(it + 1)
 
     sgrid.cells_arrays = {'conc_i': equation.concs[equation.i_curr]}
-    files_names.append(str(it+1) + '.vtu')
-    files_descriptions.append(str(it+1))
+    files_names.append(str(it + 1) + '.vtu')
+    files_descriptions.append(str(it + 1))
     sgrid.save_cells('inOut/' + files_names[-1])
     save_files_collection_to_file(file_name, files_names, files_descriptions)
 
@@ -165,7 +166,7 @@ conc_list = []
 for i in range(int(conc_right), int(conc_left)):
     conc_list.append(i)
     a_list.append(calc_a_func(i, poro_ini, True))
-    b_list.append(calc_b_func(i, d_coeff_b, poro_ini, True))
+    b_list.append(calc_b_func(i, d_free_frac, d_free_matrix, d_surf_matrix, poro_ini, True))
     poro_list.append(calc_poro(i, poro_ini, True))
 
 # plotting the dependence of 'a' and 'b' coefficients and porosity on free concentration

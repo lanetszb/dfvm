@@ -30,12 +30,14 @@ Props::Props(const std::map<std::string, std::variant<double, int>> &params)
 
         : _params(params) {}
 
-double Props::calcD(const double &conc) {
+double Props::calcD(const bool &isMatrix) {
 
-    auto DCoeffA = std::get<double>(_params["d_coeff_a"]);
-    auto DCoeffB = std::get<double>(_params["d_coeff_b"]);
+    auto dFreeFrac = std::get<double>(_params["d_free_frac"]);
+    auto dFreeMatrix = std::get<double>(_params["d_free_matrix"]);
 
-    return DCoeffA * conc + DCoeffB;
+    if (isMatrix)
+        return dFreeMatrix;
+    else return dFreeFrac;
 }
 
 void Props::printParams() {

@@ -53,14 +53,18 @@ void Convective::calcBetas(Eigen::Ref<Eigen::VectorXd> concs) {
     auto poroIni = std::get<double>(_props->_params["poro"]);
     auto &isMatrix = _sgrid->_cellsConditions.at("is_matrices");
 
+    auto dFreeFrac = std::get<double>(_props->_params["d_free_frac"]);
+    auto dFreeMatrix = std::get<double>(_props->_params["d_free_matrix"]);
+    auto dSurfaceMatrix = std::get<double>(_props->_params["d_surf_matrix"]);
+
     for (int i = 0; i < boundFaces.size(); i++) {
         auto boundFace = boundFaces[i];
         auto &faceNeighborsCell = neighborsCells[boundFace];
         auto &cell = faceNeighborsCell[0];
 
         auto &conc0 = concs(cell);
-        auto diffusivity0 = _props->calcD(conc0);
-        auto bCoeff = calcBFunc(conc0, diffusivity0,
+        // auto diffusivity0 = _props->calcD(conc0);
+        auto bCoeff = calcBFunc(conc0, dFreeFrac, dFreeMatrix, dSurfaceMatrix,
                                 poroIni, isMatrix[cell]);
 
         auto &axis = _sgrid->_facesAxes[boundFace];
@@ -78,11 +82,11 @@ void Convective::calcBetas(Eigen::Ref<Eigen::VectorXd> concs) {
         auto &conc0 = concs(cell0);
         auto &conc1 = concs(cell1);
 
-        auto diffusivity0 = _props->calcD(conc0);
-        auto diffusivity1 = _props->calcD(conc1);
-        auto bCoeff0 = calcBFunc(conc0, diffusivity0,
+        // auto diffusivity0 = _props->calcD(conc0);
+        // auto diffusivity1 = _props->calcD(conc1);
+        auto bCoeff0 = calcBFunc(conc0, dFreeFrac, dFreeMatrix, dSurfaceMatrix,
                                  poroIni, isMatrix[cell0]);
-        auto bCoeff1 = calcBFunc(conc1, diffusivity1,
+        auto bCoeff1 = calcBFunc(conc1, dFreeFrac, dFreeMatrix, dSurfaceMatrix,
                                  poroIni, isMatrix[cell1]);
 
         auto bCoeff = weighing("meanAverage", bCoeff0, bCoeff1);

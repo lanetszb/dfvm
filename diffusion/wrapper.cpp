@@ -38,10 +38,10 @@ using namespace pybind11::literals;
 
 PYBIND11_MODULE(diffusion_bind, m) {
 
-    m.def("calc_poro", calcPoro, "conc"_a, "poro"_a, "is_matrices"_a);
-    m.def("calc_a_func", calcAFunc, "conc"_a, "poro"_a, "is_matrices"_a);
-    m.def("calc_b_func", calcBFunc, "conc"_a, "diffusivity"_a, "poro"_a,
-          "is_matrices"_a);
+    m.def("calc_poro", calcPoro, "conc"_a, "poro"_a, "is_matrix"_a);
+    m.def("calc_a_func", calcAFunc, "conc"_a, "poro"_a, "is_matrix"_a);
+    m.def("calc_b_func", calcBFunc, "conc"_a, "d_free_frac"_a,
+          "d_free_matrix"_a, "d_surface_matrix"_a, "poro"_a, "is_matrix"_a);
 
     py::class_<Props, std::shared_ptr<Props>>(m, "Props")
             .def(py::init<const std::map<std::string, std::variant<double, int>> &>(),

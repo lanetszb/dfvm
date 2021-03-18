@@ -40,13 +40,7 @@ public:
 
     std::map<std::string, std::variant<double, int>> _params;
 
-    double _timePeriod;
-    double _timeStep;
-    double _DCoeffA;
-    double _DCoeffB;
-    double _porosity;
-
-    double calcD(const double &conc);
+    double calcD(const bool &isMatrix);
 
     void printParams();
 

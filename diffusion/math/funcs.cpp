@@ -4,21 +4,31 @@ double calcPoro(const double &conc, const double &poro, const bool &isMatrix) {
 
     if (isMatrix)
         return poro;
-    else return poro * 0.2;
+    else return poro;
 }
 
 double calcAFunc(const double &conc, const double &poro, const bool &isMatrix) {
 
+    double a;
+
     if (isMatrix)
-        return calcPoro(conc, poro, isMatrix);
-    else calcPoro(conc, poro, isMatrix) * 0.01;
+        a = poro;
+    else
+        a = poro;
+
+    return a;
 }
 
-double calcBFunc(const double &conc, const double &diffusivity,
-                 const double &poro, const bool &isMatrix) {
+double calcBFunc(const double &conc, const double &dFreeFrac, const double &dFreeMatrix,
+                 const double &dSurfaceMatrix, const double &poro, const bool &isMatrix) {
+
+    double b;
 
     if (isMatrix)
-        return calcPoro(conc, poro, isMatrix) * diffusivity;
-    else return calcPoro(conc, poro, isMatrix) * diffusivity * 0.01;
+        b = dFreeMatrix + dSurfaceMatrix;
+    else
+        b = dFreeFrac;
+
+    return b;
 }
 
