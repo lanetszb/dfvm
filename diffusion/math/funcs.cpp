@@ -19,27 +19,23 @@ double calcDSurface(const bool &isMatrix,
 
 }
 
-double calcPoro(const double &conc, const double &poro, const bool &isMatrix) {
+double calcPoro(const double &conc, const double &poroFrac, const double &poroMatrix,
+                const bool &isMatrix) {
 
     if (isMatrix)
-        return poro;
-    else return poro;
+        return poroMatrix;
+    else return poroFrac;
 
 }
 
-double calcAFunc(const double &conc, const double &poro, const bool &isMatrix) {
+double calcAFunc(const double &conc, const double &poroFrac, const double &poroMatrix,
+                 const bool &isMatrix) {
 
-    double a;
-
-    if (isMatrix)
-        a = poro;
-    else
-        a = poro;
-
-    return a;
+    return calcPoro(conc, poroFrac, poroMatrix, isMatrix);
 }
 
-double calcBFunc(const double &conc, const double &poro, const bool &isMatrix,
+double calcBFunc(const double &conc, const double &poroFrac, const double &poroMatrix,
+                 const bool &isMatrix,
                  const std::vector<double> &dFreeFrac,
                  const std::vector<double> &dFreeMatrix,
                  const std::vector<double> &dSurfaceMatrix) {

@@ -213,8 +213,11 @@ void Equation::cfdProcedure() {
 
 double Equation::calcFacesFlowRate(Eigen::Ref<Eigen::VectorXui64> faces) {
 
-    auto &poroIni = std::get<double>(_props->_params["poro"]);
     auto &isMatrix = _sgrid->_cellsConditions.at("is_matrices");
+
+    auto poroFrac = std::get<double>(_props->_params["poro_frac"]);
+    auto poroMatrix = std::get<double>(_props->_params["poro_matrix"]);
+
     auto dFreeFrac = std::get<std::vector<double>>(_props->_params["d_free_frac"]);
     auto dFreeMatrix = std::get<std::vector<double>>(_props->_params["d_free_matrix"]);
 
@@ -243,8 +246,8 @@ double Equation::calcFacesFlowRate(Eigen::Ref<Eigen::VectorXui64> faces) {
         auto &conc_curr0 = _concs[iCurr](cell0);
         auto &conc_curr1 = _concs[iCurr](cell1);
 
-        auto poro0 = calcPoro(conc_prev0, poroIni, isMatrix[cell0]);
-        auto poro1 = calcPoro(conc_prev1, poroIni, isMatrix[cell1]);
+        auto poro0 = calcPoro(conc_prev0, poroFrac, poroMatrix, isMatrix[cell0]);
+        auto poro1 = calcPoro(conc_prev1, poroFrac, poroMatrix, isMatrix[cell1]);
 
         auto &dS = _sgrid->_facesSs[axis];
         auto &dL = _sgrid->_spacing[axis];

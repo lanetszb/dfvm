@@ -47,11 +47,13 @@ void Local::calcTimeSteps() {
 void Local::calcAlphas(Eigen::Ref<Eigen::VectorXd> concs,
                        const double &timeStep) {
 
-    auto poroIni = std::get<double>(_props->_params["poro"]);
     auto &isMatrix = _sgrid->_cellsConditions.at("is_matrices");
 
+    auto poroFrac = std::get<double>(_props->_params["poro_frac"]);
+    auto poroMatrix = std::get<double>(_props->_params["poro_matrix"]);
+
     for (int i = 0; i < _alphas.size(); i++) {
-        auto aCoeff = calcAFunc(concs[i], poroIni, isMatrix[i]);
+        auto aCoeff = calcAFunc(concs[i], poroFrac, poroMatrix, isMatrix[i]);
         _alphas[i] = aCoeff * _sgrid->_cellV / timeStep;
     }
 }

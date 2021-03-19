@@ -69,14 +69,15 @@ time_period = float(20000)  # sec
 time_step = float(100)  # sec
 
 # diffusivity coeffs (specify only b coeff to make free diffusion constant)
-d_free_frac = np.array([0, 1., 2.])  # m2/sec
-d_free_matrix = np.array([0, 1., 2.])  # m2/sec
-d_surf_matrix = np.array([0, 1., 2.])
+d_free_frac = np.array([0, 1.])  # m2/sec
+d_free_matrix = np.array([0, 1.])  # m2/sec
+d_surf_matrix = np.array([0, 1.])
 # porosity of rock
-poro_ini = float(1)
+poro_frac = float(1)
+poro_matrix = float(0.2)
 params = {'time_period': time_period, 'time_step': time_step,
           'd_free_frac': d_free_frac, 'd_free_matrix': d_free_matrix,
-          'd_surf_matrix': d_surf_matrix, 'poro': poro_ini}
+          'd_surf_matrix': d_surf_matrix, 'poro_frac': poro_frac, 'poro_matrix': poro_matrix}
 
 key_dirichlet_one = 'left'
 key_dirichlet_two = 'right'
@@ -165,10 +166,10 @@ poro_list = []
 conc_list = []
 for i in range(int(conc_right), int(conc_left)):
     conc_list.append(i)
-    a_list.append(calc_a_func(i, poro_ini, True))
-    b_list.append(calc_b_func(i, poro_ini, True,
+    a_list.append(calc_a_func(i, poro_frac, poro_matrix, True))
+    b_list.append(calc_b_func(i, poro_frac, poro_matrix, True,
                               d_free_frac, d_free_matrix, d_surf_matrix))
-    poro_list.append(calc_poro(i, poro_ini, True))
+    poro_list.append(calc_poro(i, poro_frac, poro_matrix, True))
 
 # plotting the dependence of 'a' and 'b' coefficients and porosity on free concentration
 fig, axs = plt.subplots(3, sharex=True)
