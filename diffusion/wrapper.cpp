@@ -53,7 +53,7 @@ PYBIND11_MODULE(diffusion_bind, m) {
                  "params"_a)
 
             .def_readwrite("params", &Props::_params)
-            .def("calc_D", &Props::calcD, "conc"_a)
+
             .def("print_params", &Props::printParams);
 
     py::class_<Boundary, std::shared_ptr<Boundary>>(m, "Boundary")
