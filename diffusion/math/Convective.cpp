@@ -53,9 +53,9 @@ void Convective::calcBetas(Eigen::Ref<Eigen::VectorXd> concs) {
     auto poroIni = std::get<double>(_props->_params["poro"]);
     auto &isMatrix = _sgrid->_cellsConditions.at("is_matrices");
 
-    auto dFreeFrac = std::get<double>(_props->_params["d_free_frac"]);
-    auto dFreeMatrix = std::get<double>(_props->_params["d_free_matrix"]);
-    auto dSurfaceMatrix = std::get<double>(_props->_params["d_surf_matrix"]);
+    auto dFreeFrac = std::get<std::vector<double>>(_props->_params["d_free_frac"]);
+    auto dFreeMatrix = std::get<std::vector<double>>(_props->_params["d_free_matrix"]);
+    auto dSurfaceMatrix = std::get<std::vector<double>>(_props->_params["d_surf_matrix"]);
 
     for (int i = 0; i < boundFaces.size(); i++) {
         auto boundFace = boundFaces[i];
@@ -64,8 +64,8 @@ void Convective::calcBetas(Eigen::Ref<Eigen::VectorXd> concs) {
 
         auto &conc0 = concs(cell);
         // auto diffusivity0 = _props->calcD(conc0);
-        auto bCoeff = calcBFunc(conc0, dFreeFrac, dFreeMatrix, dSurfaceMatrix,
-                                poroIni, isMatrix[cell]);
+        auto bCoeff = calcBFunc(conc0, poroIni, isMatrix[cell], dFreeFrac, dFreeMatrix,
+                                dSurfaceMatrix);
 
         auto &axis = _sgrid->_facesAxes[boundFace];
 
@@ -84,10 +84,10 @@ void Convective::calcBetas(Eigen::Ref<Eigen::VectorXd> concs) {
 
         // auto diffusivity0 = _props->calcD(conc0);
         // auto diffusivity1 = _props->calcD(conc1);
-        auto bCoeff0 = calcBFunc(conc0, dFreeFrac, dFreeMatrix, dSurfaceMatrix,
-                                 poroIni, isMatrix[cell0]);
-        auto bCoeff1 = calcBFunc(conc1, dFreeFrac, dFreeMatrix, dSurfaceMatrix,
-                                 poroIni, isMatrix[cell1]);
+        auto bCoeff0 = calcBFunc(conc0, poroIni, isMatrix[cell0],
+                                 dFreeFrac, dFreeMatrix, dSurfaceMatrix);
+        auto bCoeff1 = calcBFunc(conc1, poroIni, isMatrix[cell1],
+                                 dFreeFrac, dFreeMatrix, dSurfaceMatrix);
 
         auto bCoeff = weighing("meanAverage", bCoeff0, bCoeff1);
         auto &axis = _sgrid->_facesAxes[nonBoundFace];

@@ -34,11 +34,12 @@ class Props {
 
 public:
     // ToDo: class Props as map, calcD to Convective
-    explicit Props(const std::map<std::string, std::variant<double, int>> &params);
+    explicit Props(
+            const std::map<std::string, std::variant<double, int, std::vector<double>>> &params);
 
     virtual ~Props() {}
 
-    std::map<std::string, std::variant<double, int>> _params;
+    std::map<std::string, std::variant<double, int, std::vector<double>>> _params;
 
     double calcD(const bool &isMatrix);
 

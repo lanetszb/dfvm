@@ -26,18 +26,18 @@
 #include <vector>
 
 
-Props::Props(const std::map<std::string, std::variant<double, int>> &params)
+Props::Props(const std::map<std::string, std::variant<double, int, std::vector<double>>> &params)
 
         : _params(params) {}
 
 double Props::calcD(const bool &isMatrix) {
 
-    auto dFreeFrac = std::get<double>(_params["d_free_frac"]);
-    auto dFreeMatrix = std::get<double>(_params["d_free_matrix"]);
+    auto dFreeFrac = std::get<std::vector<double>>(_params["d_free_frac"]);
+    auto dFreeMatrix = std::get<std::vector<double>>(_params["d_free_matrix"]);
 
     if (isMatrix)
-        return dFreeMatrix;
-    else return dFreeFrac;
+        return dFreeMatrix[1];
+    else return dFreeFrac[1];
 }
 
 void Props::printParams() {

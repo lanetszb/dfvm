@@ -215,6 +215,8 @@ double Equation::calcFacesFlowRate(Eigen::Ref<Eigen::VectorXui64> faces) {
 
     auto &poroIni = std::get<double>(_props->_params["poro"]);
     auto &isMatrix = _sgrid->_cellsConditions.at("is_matrices");
+    auto dFreeFrac = std::get<std::vector<double>>(_props->_params["d_free_frac"]);
+    auto dFreeMatrix = std::get<std::vector<double>>(_props->_params["d_free_matrix"]);
 
     double totalFlowRate = 0;
     for (uint64_t i = 0; i < faces.size(); i++) {
@@ -231,8 +233,8 @@ double Equation::calcFacesFlowRate(Eigen::Ref<Eigen::VectorXui64> faces) {
         auto &norm0 = normalsNeighborsCells[0];
         auto &norm1 = normalsNeighborsCells[1];
 
-        auto diffusivity0 = _props->calcD(isMatrix[cell0]);
-        auto diffusivity1 = _props->calcD(isMatrix[cell1]);
+        auto diffusivity0 = calcDFree(isMatrix[cell0], dFreeFrac, dFreeMatrix);
+        auto diffusivity1 = calcDFree(isMatrix[cell1], dFreeFrac, dFreeMatrix);
 
         auto &axis = _sgrid->_facesAxes[face];
         auto diffusivity = _convective->weighing("meanAverage",
