@@ -43,7 +43,7 @@ double calcBFunc(const double &conc, const double &poroFrac, const double &poroM
     double b;
 
     if (isMatrix)
-        b = calcDFree(isMatrix, dFreeFrac, dFreeMatrix) + calcDSurface(isMatrix, dSurfaceMatrix);
+        b = calcDFree(isMatrix, dFreeFrac, dFreeMatrix);
     else
         b = calcDFree(isMatrix, dFreeFrac, dFreeMatrix);
 

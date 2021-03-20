@@ -249,11 +249,13 @@ double Equation::calcFacesFlowRate(Eigen::Ref<Eigen::VectorXui64> faces) {
         auto poro0 = calcPoro(conc_prev0, poroFrac, poroMatrix, isMatrix[cell0]);
         auto poro1 = calcPoro(conc_prev1, poroFrac, poroMatrix, isMatrix[cell1]);
 
+        auto poro = _convective->weighing("meanAverage", poro0, poro1);
+
         auto &dS = _sgrid->_facesSs[axis];
         auto &dL = _sgrid->_spacing[axis];
 
-        totalFlowRate -=
-                diffusivity * (norm0 * poro0 * conc_curr0 + norm1 * poro1 * conc_curr1) * dS / dL;
+        totalFlowRate -= diffusivity * poro *
+                         (norm0 * conc_curr0 + norm1 * conc_curr1) * dS / dL;
     }
 
     return totalFlowRate;

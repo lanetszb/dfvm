@@ -51,3 +51,6 @@ __pycache__
 build
 *.eps
 *.csv
+*.nc
+
+not_commited_backup
