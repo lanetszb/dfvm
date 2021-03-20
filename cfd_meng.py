@@ -83,8 +83,8 @@ time_step = float(0.00005)  # sec
 
 # diffusivity coeffs (specify only b coeff to make free diffusion constant)
 d_free_frac = np.array([0, 1.])  # m2/sec
-d_free_matrix = np.array([0, 1.])  # m2/sec
-d_surf_matrix = np.array([0, 1.])
+d_free_matrix = np.array([0, 0.1])  # m2/sec
+d_surf_matrix = np.array([0, 0.1])
 # porosity of rock
 poro_frac = float(1.0)
 poro_matrix = float(0.5)
@@ -128,6 +128,7 @@ equation.concs = concs
 local.calc_time_steps()
 time_steps = local.time_steps
 
+equation.process_dirich_cells(equation.bound_groups_dirich, equation.concs_bound_dirich)
 flow_rate_one_time = []
 flow_rate_two_time = []
 

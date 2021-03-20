@@ -90,6 +90,8 @@ PYBIND11_MODULE(diffusion_bind, m) {
                  "props"_a, "sgrid"_a,
                  "local"_a, "convective"_a)
 
+            .def("process_dirich_cells", &Equation::processDirichCells, "bound_groups"_a,
+                 "concs_bound"_a)
             .def("fill_matrix", &Equation::fillMatrix)
             .def("calc_concs_implicit", &Equation::calcConcsImplicit)
             .def("calc_concs_explicit", &Equation::calcConcsExplicit)

@@ -105,6 +105,8 @@ conc_right = float(0)
 equation.concs_bound_dirich = {key_dirichlet_one: conc_left,
                                key_dirichlet_two: conc_right}
 
+
+
 # equation.cfd_procedure()
 
 # CFD procedure
@@ -114,6 +116,7 @@ equation.concs = concs
 local.calc_time_steps()
 time_steps = local.time_steps
 
+equation.process_dirich_cells(equation.bound_groups_dirich, equation.concs_bound_dirich)
 flow_rate_one_time = []
 flow_rate_two_time = []
 

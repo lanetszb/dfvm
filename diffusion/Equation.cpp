@@ -164,6 +164,11 @@ void Equation::processDirichCells(std::vector<std::string> &boundGroups,
 
         for (int j = 0; j < dirichCellsActive.size(); j++) {
             auto cell = dirichCellsActive[j];
+            _concs[iCurr][cell] = conc;
+        }
+
+        for (int j = 0; j < dirichCellsActive.size(); j++) {
+            auto cell = dirichCellsActive[j];
             freeVector[cell] = conc * _local->_alphas[cell];
         }
     }
