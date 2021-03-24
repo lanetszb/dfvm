@@ -7,11 +7,11 @@
 
 #include <Eigen/Dense>
 
-double calcDFree(const bool &isMatrix,
+double calcDFree(const double &conc, const bool &isMatrix,
                  const std::vector<double> &dFreeFrac,
                  const std::vector<double> &dFreeMatrix);
 
-double calcDSurface(const bool &isMatrix,
+double calcDSurface(const double &conc, const bool &isMatrix,
                     const std::vector<double> &dSurfaceMatrix);
 
 double calcPoro(const double &conc, const double &poroFrac, const double &poroMatrix,

@@ -1,6 +1,6 @@
 #include "funcs.h"
 
-double calcDFree(const bool &isMatrix,
+double calcDFree(const double &conc, const bool &isMatrix,
                  const std::vector<double> &dFreeFrac,
                  const std::vector<double> &dFreeMatrix) {
 
@@ -10,7 +10,7 @@ double calcDFree(const bool &isMatrix,
 
 }
 
-double calcDSurface(const bool &isMatrix,
+double calcDSurface(const double &conc, const bool &isMatrix,
                     const std::vector<double> &dSurfaceMatrix) {
 
     if (isMatrix)
@@ -43,9 +43,9 @@ double calcBFunc(const double &conc, const double &poroFrac, const double &poroM
     double b;
 
     if (isMatrix)
-        b = calcDFree(isMatrix, dFreeFrac, dFreeMatrix);
+        b = calcDFree(conc, isMatrix, dFreeFrac, dFreeMatrix);
     else
-        b = calcDFree(isMatrix, dFreeFrac, dFreeMatrix);
+        b = calcDFree(conc, isMatrix, dFreeFrac, dFreeMatrix);
 
     return b;
 }
