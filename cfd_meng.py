@@ -129,8 +129,11 @@ local.calc_time_steps()
 time_steps = local.time_steps
 
 equation.process_dirich_cells(equation.bound_groups_dirich, equation.concs_bound_dirich)
-flow_rate_one_time = []
-flow_rate_two_time = []
+
+free_flow_rate_one_time = []
+free_flow_rate_two_time = []
+surface_flow_rate_one_time = []
+surface_flow_rate_two_time = []
 
 bar = progressbar.ProgressBar(maxval=len(time_steps), widgets=[progressbar.Bar(),
                                                                progressbar.Percentage()])
@@ -157,10 +160,17 @@ for time_step in time_steps:
     # modifing porosity
     equation.cfd_procedure_one_step(time_step)
     conc_curr = copy.deepcopy(equation.concs[equation.i_curr])
-    flow_rate_boundary_one = equation.calc_faces_flow_rate(boundary_faces_one)
-    flow_rate_boundary_two = equation.calc_faces_flow_rate(boundary_faces_two)
-    flow_rate_one_time.append(flow_rate_boundary_one)
-    flow_rate_two_time.append(flow_rate_boundary_two)
+
+    free_flow_rate_boundary_one = equation.calc_free_flow_rate(boundary_faces_one)
+    free_flow_rate_boundary_two = equation.calc_free_flow_rate(boundary_faces_two)
+    free_flow_rate_one_time.append(free_flow_rate_boundary_one)
+    free_flow_rate_two_time.append(free_flow_rate_boundary_two)
+
+    surface_flow_rate_boundary_one = equation.calc_surface_flow_rate(boundary_faces_one)
+    surface_flow_rate_boundary_two = equation.calc_surface_flow_rate(boundary_faces_two)
+    surface_flow_rate_one_time.append(surface_flow_rate_boundary_one)
+    surface_flow_rate_two_time.append(surface_flow_rate_boundary_two)
+
     # new Dirichlet boundaries can be input here
     equation.concs_bound_dirich = {key_dirichlet_one: conc_left, key_dirichlet_two: conc_right}
 
@@ -191,9 +201,14 @@ for i in range(int(conc_right), int(conc_left)):
 
 time = np.cumsum(np.array(time_steps))
 fig1, ax1 = plt.subplots()
-plot_x_y(ax1, time, flow_rate_one_time, 'time', 'G, kg/sec', '-',
-         color='green')
-plot_x_y(ax1, time, flow_rate_two_time, 'time', 'G, kg/sec', '-',
-         color='blue')
-ax1.legend(['$Q_{in}$', '$Q_{out}$'], loc="best")
+plot_x_y(ax1, time, free_flow_rate_one_time, 'time', 'G, kg/sec', '-',
+         color='tab:green')
+plot_x_y(ax1, time, free_flow_rate_two_time, 'time', 'G, kg/sec', '-',
+         color='tab:blue')
+plot_x_y(ax1, time, surface_flow_rate_one_time, 'time', 'G, kg/sec', '-',
+         color='tab:red')
+plot_x_y(ax1, time, surface_flow_rate_two_time, 'time', 'G, kg/sec', '-',
+         color='tab:olive')
+ax1.legend(['$Q_{in\;free}$', '$Q_{out\;free}$', '$Q_{in\;surface}$', '$Q_{out\;surface}$'],
+           loc="best")
 plt.show()

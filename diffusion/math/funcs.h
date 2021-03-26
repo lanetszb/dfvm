@@ -7,6 +7,8 @@
 
 #include <Eigen/Dense>
 
+double calcConcSurfacePrime(const double &conc, const bool &isMatrix);
+
 double calcDFree(const double &conc, const bool &isMatrix,
                  const std::vector<double> &dFreeFrac,
                  const std::vector<double> &dFreeMatrix);

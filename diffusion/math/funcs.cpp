@@ -1,5 +1,16 @@
 #include "funcs.h"
 
+double calcConcSurfacePrime(const double &conc, const bool &isMatrix) {
+
+    double concSurfacePrime = 0;
+    if (isMatrix)
+        concSurfacePrime = 1.;
+    else concSurfacePrime = 0.;
+
+    return concSurfacePrime;
+
+}
+
 double calcDFree(const double &conc, const bool &isMatrix,
                  const std::vector<double> &dFreeFrac,
                  const std::vector<double> &dFreeMatrix) {

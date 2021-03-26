@@ -97,7 +97,8 @@ PYBIND11_MODULE(diffusion_bind, m) {
             .def("cfd_procedure_one_step", &Equation::cfdProcedureOneStep,
                  "timeStep"_a)
             .def("cfd_procedure", &Equation::cfdProcedure)
-            .def("calc_faces_flow_rate", &Equation::calcFacesFlowRate, "faces"_a)
+            .def("calc_free_flow_rate", &Equation::calcFreeFlowRate, "faces"_a)
+            .def("calc_surface_flow_rate", &Equation::calcSurfaceFlowRate, "faces"_a)
             .def_readwrite("dim", &Equation::dim)
             .def_readwrite("i_curr", &Equation::iCurr)
             .def_readwrite("i_prev", &Equation::iPrev)
